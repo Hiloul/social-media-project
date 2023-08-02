@@ -10,16 +10,28 @@
     <h1>Formulaire de connexion</h1>
     <form id="loginForm">
       <label for="username">Nom d'utilisateur: </label>
-      <input type="text" id="username" name="username" required />
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Pseudo..."
+        required
+      />
       <label for="password">Mot de passe: </label>
-      <input type="password" id="password" name="password" required />
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Mot de passe"
+        required
+      />
       <button type="submit">Connexion</button>
       <p id="errorMessage" style="color: red"></p>
       <p id="successMessage" style="color: green"></p>
       <div class="redirection">
-      <a href="register.html">Retour</a>
-      <a href="index.html">Accueil</a>
-    </div>
+        <a href="register.html">Retour</a>
+        <a href="index.html">Accueil</a>
+      </div>
     </form>
     <footer>Social Media &copy;2023</footer>
     <script defer src="src/js/loginScript.js"></script>

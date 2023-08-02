@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inscription</title>
-</head>
-<body>
-<h1>Formulaire d'inscription</h1>
-<!-- Formulaire d'inscription et/ou connexion -->
-<form id="userForm">
-    <label for="username">Nom d'utilisateur:</label>
-    <input type="text" id="username" name="username" placeholder="Pseudo..." required />
-    <label for="password">Mot de passe: </label>
-    <input type="password" id="password" name="password" placeholder="Mot de passe" required />
-    <button type="submit">Créer un compte</button>
-    <p id="errorMessage" style="color: red"></p>
-    <p id="successMessage" style="color: green"></p>
-    <!-- Lien vers la connexion si user existant -->
-    <div class="redirectionLogin">
-      <a href="login.html">Déjà inscrit(e)?</a>
-    </div>
-  </form>
-
-
-
-</body>
+  </head>
+  <body>
+    <h1>Formulaire d'inscription</h1>
+    <!-- Formulaire d'inscription et/ou connexion -->
+    <form id="userForm">
+      <label for="username">Nom d'utilisateur:</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Pseudo..."
+        required
+      />
+      <label for="password">Mot de passe: </label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Mot de passe"
+        required
+      />
+      <button type="submit">Créer un compte</button>
+      <p id="errorMessage" style="color: red"></p>
+      <p id="successMessage" style="color: green"></p>
+      <!-- Lien vers la connexion si user existant -->
+      <div class="redirectionLogin">
+        <a href="login.html">Déjà inscrit(e)?</a>
+      </div>
+    </form>
+  </body>
 </html>

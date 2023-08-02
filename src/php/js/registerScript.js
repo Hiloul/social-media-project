@@ -9,7 +9,12 @@ document.getElementById("userForm").addEventListener("submit", function (e) {
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
   // Envoi du nom d'utilisateur et du mot de passe à la requête
-  xhr.send("username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
+  xhr.send(
+    "username=" +
+      encodeURIComponent(username) +
+      "&password=" +
+      encodeURIComponent(password)
+  );
 
   xhr.onload = function () {
     if (this.status == 200) {

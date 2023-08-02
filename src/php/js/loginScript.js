@@ -9,7 +9,12 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   xhr.open("POST", "src/php/login.php", true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   // Ajout du password à la requête
-  xhr.send("username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
+  xhr.send(
+    "username=" +
+      encodeURIComponent(username) +
+      "&password=" +
+      encodeURIComponent(password)
+  );
   xhr.onload = function () {
     if (this.status == 200) {
       try {
