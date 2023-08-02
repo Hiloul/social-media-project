@@ -1,4 +1,3 @@
-// Login
 document.getElementById("loginForm").addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -8,20 +7,22 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "src/php/login.php", true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  // Ajout du password à la requête
+  
   xhr.send(
     "username=" +
       encodeURIComponent(username) +
       "&password=" +
       encodeURIComponent(password)
   );
+
   xhr.onload = function () {
     if (this.status == 200) {
+      console.log(this.responseText);
       try {
         var response = JSON.parse(this.responseText);
-
         var errorMessageElement = document.getElementById("errorMessage");
         var successMessageElement = document.getElementById("successMessage");
+
         if (response.error) {
           // Afficher le message d'erreur
           errorMessageElement.textContent = response.error;
@@ -42,11 +43,8 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
       }
     }
   };
+
   xhr.onerror = function () {
     console.error("Request failed.");
   };
 });
-
-
-
-

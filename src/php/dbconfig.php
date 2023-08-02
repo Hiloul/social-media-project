@@ -14,10 +14,3 @@ $opt = [
 $pdo = new PDO($dsn, $user, $pass, $opt);
 
 ?>
-<!-- Pour le lier dans le projet
-include 'config/dbconfig.php';
-Utilisez $pdo pour exécuter des requêtes SQL -->
-<!-- Ex de requête -->
-<!-- $query = $pdo->query("SELECT * FROM table");
-$results = $query->fetchAll(); -->
-

@@ -1,6 +1,6 @@
 <?php
 // Connexion BDD 
-include 'dbconfig.php';
+require 'dbconfig.php';
 
 header('Content-Type: application/json'); // Assurez-vous que votre script renvoie du JSON
 
