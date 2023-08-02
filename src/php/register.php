@@ -2,21 +2,11 @@
 // JSON
 header('Content-Type: application/json');
 
-$username = $_POST['username'];
 // Connexion BDD 
-$host = 'localhost';
-$db   = 'motus';
-$user = 'root';
-$pass = 'root';
-$charset = 'utf8';
+include 'config/dbconfig.php';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$opt = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-$pdo = new PDO($dsn, $user, $pass, $opt);
+// Contenu qui va s'inserer en BDD
+$username = $_POST['username'];
 
 // Création d'un nom d'utilisateur d'au - 8 caracters
 if (strlen($username) < 8) {
