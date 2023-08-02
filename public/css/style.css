@@ -1,40 +1,68 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, sans-serif;
+  text-decoration: none;
 }
 
 nav {
-  position: fixed;
-  top: 0;
   width: 100%;
-  background-color: #ff69b4;
+  background-color: #766ee8;
   padding: 15px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
 }
 nav a {
   color: #ffffff;
   text-decoration: none;
-  font-size: 1.2em;
+  font-size: 1.6em;
+  margin-right: 50px;
 }
 nav a:hover {
-  color: #ffb6c1;
+  color: #31dfdd;
 }
 
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
-  margin: 0;
-  background: linear-gradient(to bottom, #ff69b4, #ffffff);
-  font-family: Arial, sans-serif;
 }
-body h1 {
-  text-align: center;
-  color: #ff69b4;
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container img {
+  width: 800px;
+}
+.container .block-left h1 {
+  width: 82%;
   font-size: 2.5em;
-  text-shadow: 2px 2px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+}
+.container .block-left p {
+  width: 70%;
+  margin: 30px 0 70px 0;
+  line-height: 40px;
+  font-size: 1.5em;
+}
+
+button {
+  min-width: 200px;
+  font-size: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+button a {
+  color: blue;
 }
 
 form {
@@ -80,7 +108,7 @@ footer {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background-color: #ff69b4;
+  background-color: #766ee8;
   padding: 15px;
   text-align: center;
   color: #ffffff;

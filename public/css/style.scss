@@ -1,29 +1,35 @@
 $color-primary: #ff69b4; // Couleur rose
 $color-secondary: #ffffff; // Couleur blanche
 $color-accent: #ffb6c1; // Couleur rose claire
-$navbar-background: #ff69b4; // Couleur de fond de la navbar
+$navbar-background: #766ee8; // Couleur de fond de la navbar // T'en pense quoi de ce bleu ?
 $navbar-color: #ffffff; // Couleur du texte de la navbar
-$navbar-hover-color: #ffb6c1; // Couleur de survol du texte de la navbar
-$footer-background: #ff69b4; // Couleur de fond du footer
+$navbar-hover-color: #31dfdd; // Couleur de survol du texte de la navbar
+$footer-background: #766ee8; // Couleur de fond du footer // T'en pense quoi de ce bleu ?
 $footer-color: #ffffff; // Couleur du texte du footer
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, sans-serif;
+  text-decoration: none;
 }
 
 
+
+
 nav {
-  position: fixed;
-  top: 0;
   width: 100%;
   background-color: $navbar-background;
   padding: 15px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
 
   a {
     color: $navbar-color;
     text-decoration: none;
-    font-size: 1.2em;
+    font-size: 1.6em;
+    margin-right: 50px;
 
     &:hover {
       color: $navbar-hover-color;
@@ -31,23 +37,73 @@ nav {
   }
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+body{
   height: 100vh;
-  margin: 0;
-  background: linear-gradient(to bottom, $color-primary, $color-secondary);
-  font-family: Arial, sans-serif;
-
-  h1 {
-    text-align: center;
-    color: $color-primary;
-    font-size: 2.5em;
-    text-shadow: 2px 2px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
 }
+
+.container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    
+      img{
+        width: 800px;
+      }
+
+      .block-left h1{
+        width: 82%;
+        font-size: 2.5em;
+      }
+      .block-left p{
+        width: 70%;
+        margin: 30px 0 70px 0;
+        line-height: 40px;
+        font-size: 1.5em;
+      }
+  
+}
+
+button{
+  min-width: 200px;
+  font-size: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  }
+
+    a{
+      color: blue;
+    }
+
+
+}
+
+
+
+// body {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100vh;
+//   margin: 0;
+//   background: linear-gradient(to bottom, $color-primary, $color-secondary);
+//   font-family: Arial, sans-serif;
+
+//   h1 {
+//     text-align: center;
+//     color: $color-primary;
+//     font-size: 4.5em;
+//     text-shadow: 2px 2px rgba(0, 0, 0, 0.1);
+//     margin-bottom: 20px;
+//   }
+// }
 
 form {
   background: $color-accent;
