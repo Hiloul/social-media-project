@@ -4,7 +4,7 @@ document.getElementById("userForm").addEventListener("submit", function (e) {
   var username = document.getElementById("username").value;
   console.log(username);
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "src/php/saveUser.php", true);
+  xhr.open("POST", "src/php/register.php", true);
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhr.send("username=" + encodeURIComponent(username));
   console.log(xhr.readyState, xhr.status);
