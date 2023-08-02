@@ -2,11 +2,12 @@
 session_start();
 require 'dbconfig.php';
 
-// Récupérer tous les posts et le nom de celui qui a publié
-$sql = "SELECT posts.content, users.username FROM posts INNER JOIN users ON posts.user_id = users.id";
+// Récupérer tous les posts et les informations de l'utilisateur qui les a publiés
+$sql = "SELECT posts.content, posts.created_at, users.username FROM posts INNER JOIN users ON posts.user_id = users.id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $posts = $stmt->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -103,7 +104,7 @@ $posts = $stmt->fetchAll();
         <h3>Mon tableau de bord: </h3>
         <a href="http://localhost/php/social-media-project/index.html">Accueil</a>
         <a href="logout.php">Déconnecter</a>
-    </div>
+    
 
     <div class="publication">
         <h4>Publier quelque chose: </h4>
@@ -116,12 +117,12 @@ $posts = $stmt->fetchAll();
     </div>
 
     <?php foreach ($posts as $post) : ?>
-        <div class="post">
-            <h2><?= $post['content'] ?></h2>
-            <p>Publié par <?= $post['username'] ?></p>
-        </div>
-    <?php endforeach; ?>
-
+    <div class="post">
+        <h2><?= $post['content'] ?></h2>
+        <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+    </div>
+<?php endforeach; ?>
+</div>
     <footer>Social Media &copy;2023</footer>
 </body>
 
