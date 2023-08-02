@@ -29,5 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo "Veuillez vous connecter et écrire / publier quelque chose.";
     }
+    
 }
 ?>

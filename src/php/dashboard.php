@@ -2,11 +2,47 @@
 session_start();
 require 'dbconfig.php';
 
+// Récupérer l'ID de l'utilisateur à partir du nom d'utilisateur
+$sql = "SELECT id FROM users WHERE username = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$_SESSION['username']]);
+$user = $stmt->fetch();
+
+// Maintenant $user['id'] contient l'ID de l'utilisateur
+$user_id = $user['id'];
+
 // Récupérer tous les posts et les informations de l'utilisateur qui les a publiés
-$sql = "SELECT posts.content, posts.created_at, users.username FROM posts INNER JOIN users ON posts.user_id = users.id";
+$sql = "SELECT posts.id, posts.content, posts.created_at, users.username FROM posts INNER JOIN users ON posts.user_id = users.id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $posts = $stmt->fetchAll();
+
+if (isset($_GET['delete'])) {
+    $post_id = $_GET['delete'];
+    $sql = "DELETE FROM posts WHERE id = ? AND user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$post_id, $user_id]);
+
+    // Rediriger l'utilisateur vers le tableau de bord après avoir supprimé le post
+    header('Location: dashboard.php');
+    exit();
+}
+
+$post_id = $_GET['id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $content = $_POST['content'];
+    $sql = "UPDATE posts SET content = ? WHERE id = ? AND user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$content, $post_id, $user_id]);
+    header('Location: dashboard.php');
+    exit();
+}
+
+$sql = "SELECT content FROM posts WHERE id = ? AND user_id = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$post_id, $user_id]);
+$post = $stmt->fetch();
 
 ?>
 
@@ -118,9 +154,16 @@ $posts = $stmt->fetchAll();
             <div class="post">
                 <h2><?= $post['content'] ?></h2>
                 <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+                <?php if ($_SESSION['username'] === $post['username']) : ?>
+                    <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
+                    <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
+
+
     </div>
     <footer>Social Media &copy;2023</footer>
 </body>
+
 </html>
