@@ -43,6 +43,10 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
     }
   };
   xhr.onerror = function () {
-    console.error("Requête echouée.");
+    console.error("Request failed.");
   };
 });
+
+
+
+
