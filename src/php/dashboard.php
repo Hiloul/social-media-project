@@ -2,6 +2,13 @@
 session_start();
 require 'dbconfig.php';
 
+// Vérifier si un utilisateur est connecté
+if (!isset($_SESSION['username'])) {
+    // Rediriger vers la page de connexion
+    header('Location: login.php');
+    exit();
+}
+
 // Récupérer l'ID de l'utilisateur à partir du nom d'utilisateur
 $sql = "SELECT id FROM users WHERE username = ?";
 $stmt = $pdo->prepare($sql);
@@ -36,18 +43,26 @@ if (isset($_GET['delete'])) {
 
 if (isset($_GET['like'])) {
     $post_id = $_GET['like'];
-    $sql = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
+
+    // Vérifier si l'utilisateur a déjà aimé ce post
+    $sql = "SELECT * FROM likes WHERE user_id = ? AND post_id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$user_id, $post_id]);
 
+    if ($stmt->rowCount() === 0) {
+        // L'utilisateur peut aimer le post
+        $sql = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $post_id]);
+    }
     // Rediriger l'utilisateur vers le tableau de bord après avoir liké le post
     header('Location: dashboard.php');
     exit();
 }
 
-$post_id = $_GET['id'] ?? null;
+if (isset($_GET['id'])) {
+    $post_id = $_GET['id'];
 
-if ($post_id) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $content = $_POST['content'];
         $sql = "UPDATE posts SET content = ? WHERE id = ? AND user_id = ?";
@@ -63,6 +78,7 @@ if ($post_id) {
     $post = $stmt->fetch();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -187,3 +203,4 @@ if ($post_id) {
 </body>
 
 </html>
+

@@ -35,7 +35,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $hashed_password]);
 
-    echo json_encode(['success' => 'Utilisateur enregistré avec succès!(redirection en cours...)']);
+    echo json_encode(['success' => 'Utilisateur enregistré avec succès! (redirection en cours...)']);
 } catch (Exception $e) {
     // Si une erreur se produit, renvoyer une réponse d'erreur
     echo json_encode(['error' => $e->getMessage()]);

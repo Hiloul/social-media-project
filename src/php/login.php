@@ -28,7 +28,7 @@ $user = $stmt->fetch();
 if ($user && password_verify($password, $user['password'])) {
     // Stocker le nom d'utilisateur dans la session
     $_SESSION['username'] = $username;
-    echo json_encode(['success' => 'Connexion réussie !(redirection en cours...)']);
+    echo json_encode(['success' => 'Connexion réussie ! (redirection en cours...)']);
 } else {
     echo json_encode(['error' => 'Nom d\'utilisateur ou mot de passe incorrect.']);
 }
