@@ -28,23 +28,25 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-$post_id = $_GET['id'];
+$post_id = $_GET['id'] ?? null; // Utilisation de l'opérateur de fusion null
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $content = $_POST['content'];
-    $sql = "UPDATE posts SET content = ? WHERE id = ? AND user_id = ?";
+if ($post_id) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $content = $_POST['content'];
+        $sql = "UPDATE posts SET content = ? WHERE id = ? AND user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$content, $post_id, $user_id]);
+        header('Location: dashboard.php');
+        exit();
+    }
+
+    $sql = "SELECT content FROM posts WHERE id = ? AND user_id = ?";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$content, $post_id, $user_id]);
-    header('Location: dashboard.php');
-    exit();
+    $stmt->execute([$post_id, $user_id]);
+    $post = $stmt->fetch();
 }
-
-$sql = "SELECT content FROM posts WHERE id = ? AND user_id = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$post_id, $user_id]);
-$post = $stmt->fetch();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -157,6 +159,7 @@ $post = $stmt->fetch();
                 <?php if ($_SESSION['username'] === $post['username']) : ?>
                     <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
                     <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
+
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
