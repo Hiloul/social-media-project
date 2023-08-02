@@ -6,10 +6,10 @@ $navbar-color: #ffffff; // Couleur du texte de la navbar
 $navbar-hover-color: #ffb6c1; // Couleur de survol du texte de la navbar
 $footer-background: #ff69b4; // Couleur de fond du footer
 $footer-color: #ffffff; // Couleur du texte du footer
-
 * {
   box-sizing: border-box;
 }
+
 
 nav {
   position: fixed;
@@ -95,6 +95,8 @@ form {
   }
 }
 
+
+
 footer {
   position: fixed;
   bottom: 0;
@@ -107,47 +109,41 @@ footer {
 }
 
 // Responsive
-@media screen and (max-width: 768px) {
-  // Tablette et petit ecran
-  nav,
-  footer {
-    padding: 10px;
-    a {
-      font-size: 1em;
+@media screen and (max-width: 768px) { // Tablette et petit ecran
+    nav, footer {
+      padding: 10px;
+      a {
+        font-size: 1em;
+      }
+    }
+  
+    body h1 {
+      font-size: 2em;
+    }
+  
+    body form {
+      padding: 15px;
+      input, button {
+        padding: 5px;
+      }
     }
   }
-
-  body h1 {
-    font-size: 2em;
-  }
-
-  body form {
-    padding: 15px;
-    input,
-    button {
+@media screen and (max-width: 480px) { // pour telephone
+    nav, footer {
       padding: 5px;
+      a {
+        font-size: 0.8em;
+      }
+    }
+  
+    body h1 {
+      font-size: 1.5em;
+    }
+  
+    body form {
+      padding: 10px;
+      input, button {
+        padding: 5px;
+      }
     }
   }
-}
-@media screen and (max-width: 480px) {
-  // pour telephone
-  nav,
-  footer {
-    padding: 5px;
-    a {
-      font-size: 0.8em;
-    }
-  }
-
-  body h1 {
-    font-size: 1.5em;
-  }
-
-  body form {
-    padding: 10px;
-    input,
-    button {
-      padding: 5px;
-    }
-  }
-}

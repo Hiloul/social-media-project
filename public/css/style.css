@@ -88,12 +88,10 @@ footer {
 }
 
 @media screen and (max-width: 768px) {
-  nav,
-  footer {
+  nav, footer {
     padding: 10px;
   }
-  nav a,
-  footer a {
+  nav a, footer a {
     font-size: 1em;
   }
   body h1 {
@@ -102,18 +100,15 @@ footer {
   body form {
     padding: 15px;
   }
-  body form input,
-  body form button {
+  body form input, body form button {
     padding: 5px;
   }
 }
 @media screen and (max-width: 480px) {
-  nav,
-  footer {
+  nav, footer {
     padding: 5px;
   }
-  nav a,
-  footer a {
+  nav a, footer a {
     font-size: 0.8em;
   }
   body h1 {
@@ -122,8 +117,7 @@ footer {
   body form {
     padding: 10px;
   }
-  body form input,
-  body form button {
+  body form input, body form button {
     padding: 5px;
   }
 }/*# sourceMappingURL=style.css.map */
