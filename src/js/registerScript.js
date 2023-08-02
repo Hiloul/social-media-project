@@ -10,8 +10,6 @@ document.getElementById("userForm").addEventListener("submit", e => {
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
   // Envoi du nom d'utilisateur et du mot de passe à la requête
-  
-
   xhr.send("username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
   console.log(xhr.readyState, xhr.status);
   xhr.onload = function () {
@@ -31,9 +29,9 @@ document.getElementById("userForm").addEventListener("submit", e => {
           errorMessageElement.textContent = "";
           // Afficher le message de succès
           successMessageElement.textContent = response.success;
-          // Rediriger l'utilisateur vers la page de jeu après 2 secondes
+          // Rediriger l'utilisateur vers la page de login 2 secondes
           setTimeout(function () {
-            window.location.href = "index.html";
+            window.location.href = "login.html";
           }, 1500);
         }
       } catch (error) {
