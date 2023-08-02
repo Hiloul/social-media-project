@@ -11,8 +11,14 @@ $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
 
-// Récupérer tous les posts et les informations de l'utilisateur qui les a publiés
-$sql = "SELECT posts.id, posts.content, posts.created_at, users.username FROM posts INNER JOIN users ON posts.user_id = users.id";
+// Récupérer tous les posts, les informations de l'utilisateur qui les a publiés, et le nombre total de likes
+$sql = "
+    SELECT posts.id, posts.content, posts.created_at, users.username, COUNT(likes.id) as likes 
+    FROM posts 
+    INNER JOIN users ON posts.user_id = users.id 
+    LEFT JOIN likes ON posts.id = likes.post_id
+    GROUP BY posts.id
+";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $posts = $stmt->fetchAll();
@@ -28,7 +34,18 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-$post_id = $_GET['id'] ?? null; // Utilisation de l'opérateur de fusion null
+if (isset($_GET['like'])) {
+    $post_id = $_GET['like'];
+    $sql = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$user_id, $post_id]);
+
+    // Rediriger l'utilisateur vers le tableau de bord après avoir liké le post
+    header('Location: dashboard.php');
+    exit();
+}
+
+$post_id = $_GET['id'] ?? null;
 
 if ($post_id) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -46,7 +63,6 @@ if ($post_id) {
     $post = $stmt->fetch();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -153,16 +169,17 @@ if ($post_id) {
         </div>
 
         <?php foreach ($posts as $post) : ?>
-            <div class="post">
-                <h2><?= $post['content'] ?></h2>
-                <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
-                <?php if ($_SESSION['username'] === $post['username']) : ?>
-                    <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
-                    <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
-
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
+    <div class="post">
+        <h2><?= $post['content'] ?></h2>
+        <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+        <p><?= $post['likes'] ?> likes</p>
+        <a href="dashboard.php?like=<?= $post['id'] ?>">Like</a>
+        <?php if ($_SESSION['username'] === $post['username']) : ?>
+            <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
+            <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
+        <?php endif; ?>
+    </div>
+<?php endforeach; ?>
 
 
     </div>
