@@ -98,32 +98,29 @@ $posts = $stmt->fetchAll();
             echo "Invité";
         }
         ?>!
-
     </h1>
     <div class="container">
         <h3>Mon tableau de bord: </h3>
         <a href="http://localhost/php/social-media-project/index.html">Accueil</a>
         <a href="logout.php">Déconnecter</a>
-    
 
-    <div class="publication">
-        <h4>Publier quelque chose: </h4>
-        <form id="postForm" method="POST" action="post.php">
-            <textarea name="content" id="content" rows="5" required maxlength="280" placeholder="Quoi de neuf ?"></textarea>
-            <br>
-            <br>
-            <button type="submit">Publier</button>
-        </form>
-    </div>
+        <div class="publication">
+            <h4>Publier quelque chose: </h4>
+            <form id="postForm" method="POST" action="post.php">
+                <textarea name="content" id="content" rows="5" required maxlength="280" placeholder="Quoi de neuf ?"></textarea>
+                <br>
+                <br>
+                <button type="submit">Publier</button>
+            </form>
+        </div>
 
-    <?php foreach ($posts as $post) : ?>
-    <div class="post">
-        <h2><?= $post['content'] ?></h2>
-        <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+        <?php foreach ($posts as $post) : ?>
+            <div class="post">
+                <h2><?= $post['content'] ?></h2>
+                <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+            </div>
+        <?php endforeach; ?>
     </div>
-<?php endforeach; ?>
-</div>
     <footer>Social Media &copy;2023</footer>
 </body>
-
 </html>
