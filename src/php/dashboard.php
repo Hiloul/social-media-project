@@ -1,6 +1,14 @@
 <?php
 session_start();
+require 'dbconfig.php';
+
+// Récupérer tous les posts et le nom de celui qui a publié
+$sql = "SELECT posts.content, users.username FROM posts INNER JOIN users ON posts.user_id = users.id";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$posts = $stmt->fetchAll();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,23 +17,23 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord</title>
     <style>
-     
-body {
-    background: linear-gradient(to bottom, #ff69b4, #ffb6c1, #ffffff);
-    height: 100vh;
-    margin: 0;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
+        body {
+            background: linear-gradient(to bottom, #ff69b4, #ffb6c1, #ffffff);
+            height: 100vh;
+            margin: 0;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
 
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 36px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 36px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -59,22 +67,23 @@ h1 {
         .container:hover {
             background-color: #bbb;
         }
+
         footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px;
-  background-color: #333;
-  color: #fff;
-  font-size: 14px;
-  width: 100%;
-  bottom: 0;}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            background-color: #333;
+            color: #fff;
+            font-size: 14px;
+            width: 100%;
+            bottom: 0;
+        }
 
-  footer::before {
-    content: "\00a9";
-    margin-right: 5px;
-  }
-
+        footer::before {
+            content: "\00a9";
+            margin-right: 5px;
+        }
     </style>
 </head>
 
@@ -89,14 +98,30 @@ h1 {
         }
         ?>!
 
-
-
     </h1>
     <div class="container">
         <h3>Mon tableau de bord: </h3>
         <a href="http://localhost/php/social-media-project/index.html">Accueil</a>
         <a href="logout.php">Déconnecter</a>
     </div>
+
+    <div class="publication">
+        <h4>Publier quelque chose: </h4>
+        <form id="postForm" method="POST" action="post.php">
+            <textarea name="content" id="content" rows="5" required maxlength="280" placeholder="Quoi de neuf ?"></textarea>
+            <br>
+            <br>
+            <button type="submit">Publier</button>
+        </form>
+    </div>
+
+    <?php foreach ($posts as $post) : ?>
+        <div class="post">
+            <h2><?= $post['content'] ?></h2>
+            <p>Publié par <?= $post['username'] ?></p>
+        </div>
+    <?php endforeach; ?>
+
     <footer>Social Media &copy;2023</footer>
 </body>
 
