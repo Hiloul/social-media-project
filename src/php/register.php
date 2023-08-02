@@ -1,9 +1,8 @@
 <?php
-// JSON
-header('Content-Type: application/json');
-
 // Connexion BDD 
-include 'config/dbconfig.php';
+include 'dbconfig.php';
+
+header('Content-Type: application/json'); // Assurez-vous que votre script renvoie du JSON
 
 // Récupération des informations de l'utilisateur
 $username = $_POST['username'];
@@ -30,10 +29,15 @@ if ($count > 0) {
 // Hachage du mot de passe
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-// Enregistrement de l'utilisateur dans la base de données
-$sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$username, $hashed_password]);
+try {
+    // Enregistrement de l'utilisateur dans la base de données
+    $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$username, $hashed_password]);
 
-echo json_encode(['success' => 'Utilisateur enregistré avec succès!']);
+    echo json_encode(['success' => 'Utilisateur enregistré avec succès!']);
+} catch (Exception $e) {
+    // Si une erreur se produit, renvoyer une réponse d'erreur
+    echo json_encode(['error' => $e->getMessage()]);
+}
 ?>

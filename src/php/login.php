@@ -6,7 +6,7 @@ session_start();
 header('Content-Type: application/json');
 
 // Connexion BDD 
-include 'config/dbconfig.php';
+include 'dbconfig.php';
 
 // Contenu qui va s'insérer en BDD
 $username = $_POST['username'];
