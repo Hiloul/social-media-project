@@ -19,12 +19,6 @@ $profil = $stmt->fetch();
 
 // Si un formulaire de modification du profil a été soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupérez les informations du formulaire ici
-    // $profile_picture = ...
-    // $bio = ...
-    // $birthdate = ...
-    // etc.
-
     // Mettre à jour le profil si un profil existe déjà
     if ($profil) {
         $sql = "UPDATE profils SET profile_picture = ?, bio = ?, birthdate = ?, updated_at = NOW() WHERE user_id = ?";
@@ -45,6 +39,15 @@ $sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $profil = $stmt->fetch();
+
+// Obtenir les amis de l'utilisateur
+$sql = "SELECT users.* FROM friends 
+        JOIN users ON friends.friend_id = users.id 
+        WHERE friends.user_id = ? AND friends.status = 'ACCEPTED'";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$friends = $stmt->fetchAll();
+
 
 // Obtenir les posts de l'utilisateur
 $sql = "SELECT * FROM posts WHERE user_id = ?";
@@ -90,6 +93,15 @@ $comments = $stmt->fetchAll();
 <a href="dashboard.php">Aller à l'accueil</a>
 
 <h2>Mes amis</h2>
+<?php if (!empty($friends)) : ?>
+    <?php foreach ($friends as $friend) : ?>
+        <div class="friend">
+            <p><?= htmlspecialchars($friend['username']) ?></p>
+        </div>
+    <?php endforeach; ?>
+<?php else : ?>
+    <p>Aucun ami.</p>
+<?php endif; ?>
 
     <h2>Mes Posts</h2>
     <?php if (!empty($posts)) : ?>
