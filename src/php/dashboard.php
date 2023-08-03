@@ -105,7 +105,7 @@ foreach ($posts as &$post) {
     $stmt->execute([$post['id']]);
     $comments = $stmt->fetchAll();
 
-    if(!empty($comments)){
+    if (!empty($comments)) {
         $post['comments'] = $comments;
     }
 }
@@ -223,41 +223,40 @@ unset($post);
         </div>
 
         <?php foreach ($posts as $post) : ?>
-    <div class="post">
-        <h2><?= $post['content'] ?></h2>
-        <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
-        <p><?= $post['likes'] ?> likes</p>
-        <a href="dashboard.php?like=<?= $post['id'] ?>">Like</a>
-        <?php if ($_SESSION['username'] === $post['username']) : ?>
-            <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
-            <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
-        <?php endif; ?>
+            <div class="post">
+                <h2><?= $post['content'] ?></h2>
+                <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+                <p><?= $post['likes'] ?> likes</p>
+                <a href="dashboard.php?like=<?= $post['id'] ?>">Like</a>
+                <?php if ($_SESSION['username'] === $post['username']) : ?>
+                    <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
+                    <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
+                <?php endif; ?>
 
-        <!-- Affichage des commentaires -->
-        <div class="comments">
-            <?php foreach ($post['comments'] as $comment) : ?>
-                <div class="comment">
-                    <p><?= $comment['content'] ?></p>
-                    <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
+                <!-- Affichage des commentaires -->
+                <div class="comments">
+                    <?php if (empty($post['comments'])) : ?>
+                        <p>0 commentaires</p>
+                    <?php else : ?>
+                        <?php foreach ($post['comments'] as $comment) : ?>
+                            <div class="comment">
+                                <p><?= $comment['content'] ?></p>
+                                <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
+
+                <!-- Formulaire de commentaire -->
+                <form id="commentForm" method="post" action="comment.php">
+                    <input type="hidden" id="post_id" name="post_id" value="<?= htmlspecialchars($post['id']) ?>">
+                    <textarea id="content" name="content" placeholder="Ajouter un commentaire..." required></textarea>
+                    <button type="submit">Publier le commentaire</button>
+                </form>
+
             <?php endforeach; ?>
-        </div>
 
-       
-         <!-- Formulaire de commentaire -->
-         <form id="commentForm" method="post" action="comment.php">
-            <input type="hidden" id="post_id" name="post_id" value="<?= $post['id'] ?>">
-            <textarea id="content" name="content" placeholder="Ajouter un commentaire..."></textarea>
-            <button type="submit">Publier le commentaire</button>
-        </form>
-    </div>
-<?php endforeach; ?>
-
-
-
-    </div>
-    <footer>Social Media &copy;2023</footer>
+            </div>
+            <footer>Social Media &copy;2023</footer>
 </body>
-
 </html>
-
