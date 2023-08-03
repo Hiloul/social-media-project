@@ -111,12 +111,33 @@ foreach ($posts as &$post) {
 }
 unset($post);
 
+// Pour chaque post, récupérer les commentaires
+foreach ($posts as &$post) {
+    $sql = "
+        SELECT comments.id, comments.content, comments.created_at, users.username 
+        FROM comments 
+        INNER JOIN users ON comments.user_id = users.id 
+        WHERE comments.post_id = ?
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$post['id']]);
+    $comments = $stmt->fetchAll();
 
+    $post['comments'] = $comments;
+}
+unset($post); //
 
+if (isset($_GET['delete_comment'])) {
+    $comment_id = $_GET['delete_comment'];
+    $sql = "DELETE FROM comments WHERE id = ? AND user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$comment_id, $user_id]);
 
-
+    // Rediriger l'utilisateur vers le tableau de bord après avoir supprimé le commentaire
+    header('Location: dashboard.php');
+    exit();
+}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -210,6 +231,7 @@ unset($post);
     <div class="container">
         <h3>Mon tableau de bord: </h3>
         <a href="http://localhost/php/social-media-project/index.html">Accueil</a>
+        <a href="profil.php">Profil</a>
         <a href="logout.php">Déconnecter</a>
 
         <div class="publication">
@@ -233,19 +255,23 @@ unset($post);
                     <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
                 <?php endif; ?>
 
-                <!-- Affichage des commentaires -->
-                <div class="comments">
-                    <?php if (empty($post['comments'])) : ?>
-                        <p>0 commentaires</p>
-                    <?php else : ?>
-                        <?php foreach ($post['comments'] as $comment) : ?>
-                            <div class="comment">
-                                <p><?= $comment['content'] ?></p>
-                                <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
+              <!-- Affichage des commentaires -->
+<div class="comments">
+    <?php if (empty($post['comments'])) : ?>
+        <p>0 commentaires</p>
+    <?php else : ?>
+        <?php foreach ($post['comments'] as $comment) : ?>
+            <div class="comment">
+                <p><?= $comment['content'] ?></p>
+                <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
+                <?php if ($_SESSION['username'] === $comment['username']) : ?>
+                    <a href="dashboard.php?delete_comment=<?= $comment['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">Supprimer</a>
+                    <a href="edit_comment.php?id=<?= $comment['id'] ?>">Modifier</a>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
 
                 <!-- Formulaire de commentaire -->
                 <form id="commentForm" method="post" action="comment.php">
