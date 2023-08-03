@@ -77,6 +77,44 @@ if (isset($_GET['id'])) {
     $stmt->execute([$post_id, $user_id]);
     $post = $stmt->fetch();
 }
+
+// Récupérer tous les posts, les informations de l'utilisateur qui les a publiés, et le nombre total de likes
+$sql = "
+    SELECT posts.id, posts.content, posts.created_at, users.username, COUNT(likes.id) as likes 
+    FROM posts 
+    INNER JOIN users ON posts.user_id = users.id 
+    LEFT JOIN likes ON posts.id = likes.post_id
+    GROUP BY posts.id
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$posts = $stmt->fetchAll();
+
+// Pour chaque post, récupérer les commentaires
+foreach ($posts as &$post) {
+    // Initialize comments key to an empty array
+    $post['comments'] = [];
+
+    $sql = "
+        SELECT comments.content, comments.created_at, users.username 
+        FROM comments 
+        INNER JOIN users ON comments.user_id = users.id 
+        WHERE comments.post_id = ?
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$post['id']]);
+    $comments = $stmt->fetchAll();
+
+    if(!empty($comments)){
+        $post['comments'] = $comments;
+    }
+}
+unset($post);
+
+
+
+
+
 ?>
 
 
@@ -194,8 +232,27 @@ if (isset($_GET['id'])) {
             <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
             <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
         <?php endif; ?>
+
+        <!-- Affichage des commentaires -->
+        <div class="comments">
+            <?php foreach ($post['comments'] as $comment) : ?>
+                <div class="comment">
+                    <p><?= $comment['content'] ?></p>
+                    <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+       
+         <!-- Formulaire de commentaire -->
+         <form id="commentForm" method="post" action="comment.php">
+            <input type="hidden" id="post_id" name="post_id" value="<?= $post['id'] ?>">
+            <textarea id="content" name="content" placeholder="Ajouter un commentaire..."></textarea>
+            <button type="submit">Publier le commentaire</button>
+        </form>
     </div>
 <?php endforeach; ?>
+
 
 
     </div>
