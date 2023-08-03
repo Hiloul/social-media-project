@@ -19,6 +19,7 @@ nav a {
   text-decoration: none;
   font-size: 1.6em;
   margin-right: 50px;
+  transition: 0.3s;
 }
 nav a:hover {
   color: #31dfdd;
@@ -99,6 +100,7 @@ form .redirectionLogin {
 }
 form .redirectionLogin a {
   color: #ff69b4;
+  transition: 0.3s;
 }
 form .redirectionLogin a:hover {
   color: #ff369b;
