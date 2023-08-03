@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
 // Récupération des informations du profil
 $sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE 1";
 $stmt = $pdo->prepare($sql);
@@ -70,21 +69,27 @@ $comments = $stmt->fetchAll();
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Profil de <?= htmlspecialchars($_SESSION['username']) ?></title>
 </head>
-
 <body>
-    <h1>Profil de <?= htmlspecialchars($_SESSION['username']) ?></h1>
+    <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
+    <form action="edit_profil.php">
+    <button type="submit">Modifier Profil</button>
+</form>
+
     <?php if ($profil) : ?>
-        <p><strong>Photo de profil : </strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
+        <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
         <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
         <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
         <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
     <?php else : ?>
         <p>Aucune information de profil à afficher.</p>
     <?php endif; ?>
+
+<a href="dashboard.php">Aller à l'accueil</a>
+
+<h2>Mes amis</h2>
 
     <h2>Mes Posts</h2>
     <?php if (!empty($posts)) : ?>
