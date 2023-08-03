@@ -2,14 +2,21 @@
 session_start();
 require 'dbconfig.php';
 
-// Assurez-vous que l'utilisateur est connecté
+// Vérifier si un utilisateur est connecté
 if (!isset($_SESSION['username'])) {
+    // Rediriger vers la page de connexion
     header('Location: login.php');
     exit();
 }
 
-// Récupérer l'ID de l'utilisateur à partir de la session
-$user_id = $_SESSION['user_id'];
+// Récupérer l'ID de l'utilisateur à partir du nom d'utilisateur
+$sql = "SELECT id FROM users WHERE username = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$_SESSION['username']]);
+$user = $stmt->fetch();
+
+// Maintenant $user['id'] contient l'ID de l'utilisateur
+$user_id = $user['id'];
 
 // Obtenir les informations du profil
 $sql = "SELECT * FROM profils WHERE user_id = ?";
@@ -178,7 +185,7 @@ $comments = $stmt->fetchAll();
             <div class="friend">
                 <p><?= htmlspecialchars($friend['username']) ?></p>
                 <p><button>Supprimer l'ami</button></p>
-                <p><<button>Bloquer l'ami</button></p>
+                <p><button>Bloquer l'ami</button></p>
             </div>
         <?php endforeach; ?>
     <?php else : ?>
@@ -201,7 +208,7 @@ $comments = $stmt->fetchAll();
     <?php if (!empty($likes)) : ?>
         <?php foreach ($likes as $like) : ?>
             <div class="like">
-                <p>Post aimé: <?= htmlspecialchars($like['content']) ?></p>
+                <p><?= htmlspecialchars($like['content']) ?></p>
             </div>
         <?php endforeach; ?>
     <?php else : ?>
