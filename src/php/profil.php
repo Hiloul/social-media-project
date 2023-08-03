@@ -176,6 +176,8 @@ $comments = $stmt->fetchAll();
         <?php foreach ($friends as $friend) : ?>
             <div class="friend">
                 <p><?= htmlspecialchars($friend['username']) ?></p>
+                <p><button>Supprimer l'ami</button></p>
+                <p><<button>Bloquer l'ami</button></p>
             </div>
         <?php endforeach; ?>
     <?php else : ?>
