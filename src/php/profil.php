@@ -69,20 +69,99 @@ $comments = $stmt->fetchAll();
 
 ?>
 
-
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Profil de <?= htmlspecialchars($_SESSION['username']) ?></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1,
+        h2 {
+            color: #444;
+        }
+
+        .post,
+        .like,
+        .comment,
+        .friend {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .post p,
+        .like p,
+        .comment p,
+        .friend p {
+            margin: 0 0 10px;
+        }
+
+        img {
+            max-width: 100px;
+            border-radius: 50%;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            color: #007BFF;
+        }
+
+        /* Responsive  */
+        @media only screen and (max-width: 600px) {
+
+            .post,
+            .like,
+            .comment,
+            .friend {
+                padding: 10px;
+            }
+
+            img {
+                max-width: 80px;
+            }
+
+            button {
+                padding: 8px 16px;
+            }
+        }
+
+        @media only screen and (max-width: 400px) {
+            img {
+                max-width: 60px;
+            }
+
+            button {
+                padding: 6px 12px;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
-    <form action="edit_profil.php">
-    <button type="submit">Modifier Profil</button>
-</form>
 
     <?php if ($profil) : ?>
         <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
+        <form action="edit_profil.php">
+            <button type="submit">Modifier Profil</button>
+        </form>
         <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
         <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
         <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
@@ -90,18 +169,18 @@ $comments = $stmt->fetchAll();
         <p>Aucune information de profil à afficher.</p>
     <?php endif; ?>
 
-<a href="dashboard.php">Aller à l'accueil</a>
+    <a href="dashboard.php">Aller à l'accueil</a>
 
-<h2>Mes amis</h2>
-<?php if (!empty($friends)) : ?>
-    <?php foreach ($friends as $friend) : ?>
-        <div class="friend">
-            <p><?= htmlspecialchars($friend['username']) ?></p>
-        </div>
-    <?php endforeach; ?>
-<?php else : ?>
-    <p>Aucun ami.</p>
-<?php endif; ?>
+    <h2>Mes amis</h2>
+    <?php if (!empty($friends)) : ?>
+        <?php foreach ($friends as $friend) : ?>
+            <div class="friend">
+                <p><?= htmlspecialchars($friend['username']) ?></p>
+            </div>
+        <?php endforeach; ?>
+    <?php else : ?>
+        <p>Aucun ami.</p>
+    <?php endif; ?>
 
     <h2>Mes Posts</h2>
     <?php if (!empty($posts)) : ?>
