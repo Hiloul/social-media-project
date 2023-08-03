@@ -170,6 +170,7 @@ $comments = $stmt->fetchAll();
     <?php endif; ?>
 
     <a href="dashboard.php">Aller à l'accueil</a>
+    <a href="message.php">Messagerie privée</a>
 
     <h2>Mes amis</h2>
     <?php if (!empty($friends)) : ?>
