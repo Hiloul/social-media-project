@@ -148,56 +148,45 @@ if (isset($_GET['delete_comment'])) {
     <title>Tableau de bord</title>
     <style>
         body {
-            background: linear-gradient(to bottom, #ff69b4, #ffb6c1, #ffffff);
-            height: 100vh;
-            margin: 0;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 36px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
+            font-family: Arial, sans-serif;
             padding: 20px;
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            margin-bottom: 200px;
-            margin-top: 200px;
-        }
-
-        h3 {
-            margin-bottom: 20px;
-        }
-
-        a {
-            display: inline-block;
-            margin: 5px 0;
-            padding: 10px 20px;
-            text-decoration: none;
+            background-color: #f0f0f0;
             color: #333;
-            background-color: #ddd;
+        }
+        h1, h3, h4 {
+            color: #444;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #0056b3;
+        }
+        .post {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
             border-radius: 5px;
-
         }
-
-        .container:hover {
-            background-color: #bbb;
+        textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
         footer {
             display: flex;
             justify-content: center;
@@ -206,17 +195,22 @@ if (isset($_GET['delete_comment'])) {
             background-color: #333;
             color: #fff;
             font-size: 14px;
-            width: 100%;
+            margin-top: 20px;
+            
             bottom: 0;
+            width: 100%;
         }
-
         footer::before {
             content: "\00a9";
             margin-right: 5px;
         }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
-
 <body>
     <h1>
         Bienvenue à toi,
