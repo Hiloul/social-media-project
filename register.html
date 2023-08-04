@@ -4,20 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inscription</title>
-    <link rel="stylesheet" href="public/css/style.css" />
+    <link rel="stylesheet" href="public/css/login-register.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Raleway:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">    
   </head>
   <body>
     <nav>
-      <a href="index.html">Accueil</a>
+      <a href="index.html"><strong>SOME</strong></a>
     </nav>
     <div class="container">
-    <h1>Formulaire d'inscription</h1>
     <!-- Formulaire d'inscription et/ou connexion -->
-    <form id="userForm">
-      <label for="username">Nom d'utilisateur:</label>
+    <form id="userForm" class="loginForm">
+      <img src="images/checklist.png" alt="">
       <input
         type="text"
         id="username"
@@ -25,12 +24,11 @@
         placeholder="Pseudo..."
         required
       />
-      <label for="password">Mot de passe: </label>
       <input
         type="password"
         id="password"
         name="password"
-        placeholder="Mot de passe"
+        placeholder="Mot de passe..."
         required
       />
       <button type="submit">Créer un compte</button>
@@ -42,7 +40,8 @@
       </div>
     </form>
   </div>
-  
+
+  <footer>Social Media &copy;2023</footer>
     <script defer src="src/js/registerScript.js"></script>
   </body>
 </html>
