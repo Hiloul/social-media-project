@@ -14,6 +14,9 @@ nav {
   justify-content: space-between;
   align-items: center;
 }
+nav .left img {
+  width: 80px;
+}
 nav a {
   color: #ffffff;
   text-decoration: none;
@@ -51,7 +54,7 @@ body {
 button {
   min-width: 200px;
   font-size: 20px;
-  padding: 12px;
+  padding: 22px;
   border-radius: 10px;
   border: none;
   outline: none;
@@ -117,37 +120,49 @@ footer {
   font-size: 1.2em;
 }
 
-@media screen and (max-width: 768px) {
-  nav, footer {
-    padding: 10px;
-  }
-  nav a, footer a {
-    font-size: 1em;
-  }
-  body h1 {
-    font-size: 2em;
-  }
-  body form {
-    padding: 15px;
-  }
-  body form input, body form button {
-    padding: 5px;
+@media screen and (max-width: 1550px) {
+  .block-left {
+    padding-left: 20px;
   }
 }
-@media screen and (max-width: 480px) {
-  nav, footer {
-    padding: 5px;
+@media screen and (max-width: 1340px) {
+  .block-left {
+    font-size: 15px;
   }
-  nav a, footer a {
-    font-size: 0.8em;
+  .block-right img {
+    width: 600px;
   }
-  body h1 {
-    font-size: 1.5em;
+}
+@media screen and (max-width: 1090px) {
+  .block-left {
+    font-size: 12px;
   }
-  body form {
-    padding: 10px;
+}
+@media screen and (max-width: 995px) {
+  .container {
+    flex-direction: column-reverse;
   }
-  body form input, body form button {
-    padding: 5px;
+  .container .block-left {
+    text-align: center;
+    padding-left: 0;
+  }
+  .container .block-left p {
+    width: 60%;
+    margin: 30px auto;
+  }
+  .container .block-left h1 {
+    margin: auto;
+  }
+}
+@media screen and (max-width: 650px) {
+  .block-right img {
+    width: 500px;
+  }
+  nav {
+    width: 100%;
+  }
+  nav a {
+    font-size: 1.3em;
+    margin-right: 20px;
   }
 }/*# sourceMappingURL=style.css.map */
