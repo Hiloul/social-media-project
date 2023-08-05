@@ -18,14 +18,8 @@ nav {
   justify-content: center;
   align-items: center;
 }
-nav a {
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 1.6em;
-  transition: 0.3s;
-}
-nav a:hover {
-  color: #31dfdd;
+nav img {
+  width: 90px;
 }
 
 .container {
@@ -71,6 +65,8 @@ nav a:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
   font-weight: bold;
+  background: #766ee8;
+  color: white;
 }
 .container .loginForm .redirectionLogin {
   text-align: center;

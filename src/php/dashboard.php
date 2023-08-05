@@ -145,6 +145,7 @@ if (isset($_GET['delete_comment'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Tableau de bord</title>
     <style>
         body {
@@ -224,9 +225,9 @@ if (isset($_GET['delete_comment'])) {
     </h1>
     <div class="container">
         <h3>Mon tableau de bord: </h3>
-        <a href="http://localhost/php/social-media-project/index.html">Accueil</a>
-        <a href="profil.php">Profil</a>
-        <a href="logout.php">Déconnecter</a>
+        <a href="http://localhost/php/social-media-project/index.html"><button><i class="fa-solid fa-house"></i></button></a>
+        <a href="profil.php"><button><i class="fa-solid fa-user"></i></button></a>
+        <a href="logout.php"><button><i class="fa-solid fa-right-from-bracket"></i></button></a>
 
         <div class="publication">
             <h4>Publier quelque chose: </h4>
