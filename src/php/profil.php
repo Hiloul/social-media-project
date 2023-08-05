@@ -184,8 +184,12 @@ $comments = $stmt->fetchAll();
         <?php foreach ($friends as $friend) : ?>
             <div class="friend">
                 <p><?= htmlspecialchars($friend['username']) ?></p>
-                <p><button>Supprimer l'ami</button></p>
-                <p><button>Bloquer l'ami</button></p>
+                <p>
+                    <button onclick="confirmAction('Êtes-vous sûr de vouloir supprimer cet ami(e) ?', 'status_friend.php?delete_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Supprimer l'ami</button>
+                </p>
+                <p>
+                    <button onclick="confirmAction('Êtes-vous sûr de vouloir bloquer cet ami(e) ?', 'status_friend.php?block_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Bloquer l'ami</button>
+                </p>
             </div>
         <?php endforeach; ?>
     <?php else : ?>
@@ -215,8 +219,6 @@ $comments = $stmt->fetchAll();
         <p>Aucun like à afficher.</p>
     <?php endif; ?>
 
-
-
     <h2>Mes Commentaires</h2>
     <?php if (!empty($comments)) : ?>
         <?php foreach ($comments as $comment) : ?>
@@ -228,7 +230,14 @@ $comments = $stmt->fetchAll();
     <?php else : ?>
         <p>Aucun commentaire à afficher.</p>
     <?php endif; ?>
-
+<!-- Script button bloquet/supprimer ami -->
+    <script>
+        function confirmAction(message, url) {
+            if (confirm(message)) {
+                window.location.href = url;
+            }
+        }
+    </script>
 
 </body>
 

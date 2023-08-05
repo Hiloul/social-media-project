@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 require 'dbconfig.php';
@@ -38,47 +37,91 @@ $sql = "SELECT users.* FROM friends
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $friends = $stmt->fetchAll();
+// Supprimer un ami
+if (isset($_GET['delete_friend'])) {
+    $friend_to_delete_id = filter_var($_GET['delete_friend'], FILTER_SANITIZE_NUMBER_INT);
 
-// Supprimer ami: status = 'DELETED'
-if (isset($_POST['delete_friend_id'])) {
-    $friend_to_delete_id = $_POST['delete_friend_id'];
+    // Begin transaction
+    $pdo->beginTransaction();
 
-    $sql = "UPDATE friends 
-            SET status = 'DELETED'
-            WHERE user_id = ? AND friend_id = ?";
-    $stmt = $pdo->prepare($sql);
-    $success = $stmt->execute([$user_id, $friend_to_delete_id]);
+    try {
+        // Check that the user is friends with the friend to delete
+        $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status != 'DELETED'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_to_delete_id]);
 
-    if ($success) {
-        echo "Status amicale mit à jour: 'DELETED'.";
-    } else {
-        echo "Il y a eu un problème lors de la suppression.";
+        if ($stmt->rowCount() == 0) {
+            echo "The user you're trying to delete is not your friend.";
+            $pdo->rollBack();
+            exit();
+        }
+
+        $sql = "UPDATE friends 
+                SET status = 'DELETED'
+                WHERE user_id = ? AND friend_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_to_delete_id]);
+
+        if ($stmt->rowCount()) {
+            echo "Friendship status updated: 'DELETED'.";
+            // Commit the transaction
+            $pdo->commit();
+        } else {
+            echo "There was a problem deleting the friend.";
+            // Rollback the transaction
+            $pdo->rollBack();
+        }
+    } catch (PDOException $e) {
+        // Rollback the transaction on error
+        $pdo->rollBack();
+        echo 'Error: ' . $e->getMessage();
     }
 } else {
     echo "No delete_friend_id provided.";
 }
-
-// Block friend: status = 'BLOCKED'
+// Block a friend
 if (isset($_POST['block_friend_id'])) {
-    $friend_to_block_id = $_POST['block_friend_id'];
+    $friend_to_block_id = filter_var($_POST['block_friend_id'], FILTER_SANITIZE_NUMBER_INT);
 
-    $sql = "UPDATE friends 
-            SET status = 'BLOCKED'
-            WHERE user_id = ? AND friend_id = ?";
-    $stmt = $pdo->prepare($sql);
-    $success = $stmt->execute([$user_id, $friend_to_block_id]);
+    // Start the transaction
+    $pdo->beginTransaction();
 
-    if ($success) {
-        echo "Status amicale mit à jour: 'BLOCKED'.";
-    } else {
-        echo "Il y a eu un problème lors du blocage.";
+    try {
+        // Verify if the friend to be blocked is indeed a friend and not already blocked
+        $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status != 'BLOCKED'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_to_block_id]);
+
+        if ($stmt->rowCount() == 0) {
+            echo "The user you're trying to block is either not your friend or already blocked.";
+            $pdo->rollBack();
+            exit();
+        }
+
+        $sql = "UPDATE friends 
+                SET status = 'BLOCKED'
+                WHERE user_id = ? AND friend_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_to_block_id]);
+
+        if ($stmt->rowCount()) {
+            echo "Friendship status updated: 'BLOCKED'.";
+            // Commit the transaction
+            $pdo->commit();
+        } else {
+            echo "There was a problem blocking the friend.";
+            // Rollback the transaction
+            $pdo->rollBack();
+        }
+    } catch (PDOException $e) {
+        // Rollback the transaction on error
+        $pdo->rollBack();
+        echo 'Error: ' . $e->getMessage();
     }
 } else {
     echo "No block_friend_id provided.";
 }
+
 ?>
 
 
-
-
-<p><a href="profil.php?delete_friend=<?= $friend['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet ami(e) ?')">Supprimer l'ami</a></p>
