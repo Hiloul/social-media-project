@@ -27,16 +27,9 @@ nav {
   justify-content: center;
   align-items: center;
 
-  a {
-    color: $navbar-color;
-    text-decoration: none;
-    font-size: 1.6em;
-    transition: 0.3s;
-
-    &:hover {
-      color: $navbar-hover-color;
+    img{
+        width: 90px;
     }
-  }
 }
 
 
@@ -86,6 +79,8 @@ nav {
                     transform: translateY(-5px);
                     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
                     font-weight: bold;
+                    background: #766ee8;
+                    color: white;
                 }
 
 
