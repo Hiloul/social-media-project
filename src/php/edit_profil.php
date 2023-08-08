@@ -72,8 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: profil.php');
     exit();
 }
-
-
 ?>
 
 <!DOCTYPE html>

@@ -74,6 +74,25 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $comments = $stmt->fetchAll();
 
+
+// Vérification de la soumission du formulaire
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['search'])) {
+        $search = $_POST['search'];
+
+        // Requête pour la recherche
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE username LIKE :search");
+        $stmt->execute(['search' => "%$search%"]);
+
+        // Récupération des résultats
+        $results = $stmt->fetchAll();
+
+        // Affichage des résultats
+        foreach ($results as $row) {
+            echo $row['username'] . "<br>";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -88,8 +107,7 @@ $comments = $stmt->fetchAll();
             color: #333;
             margin: 0;
         }
-        
-        .menu{
+        .menu {
             margin-top: 10px;
             height: 60px;
             background: white;
@@ -98,14 +116,12 @@ $comments = $stmt->fetchAll();
             align-items: center;
             border-radius: 20px;
         }
-
-        .container{
+        .container {
             display: flex;
             margin: 30px;
             justify-content: space-between;
         }
-
-        .block-1{
+        .block-1 {
             height: 400px;
             border-radius: 20px;
             width: 600px;
@@ -117,22 +133,16 @@ $comments = $stmt->fetchAll();
             margin-right: 10px;
             margin-bottom: 20px;
         }
-
-        .block-2{
+        .block-2 {
             width: 60%;
             background: white;
             border-radius: 20px;
         }
-
-        h1,
-        h2 {
+        h1,h2 {
             color: #444;
             margin-left: 10px;
         }
-
-        p{
-            margin-left: 10px;
-        }
+        p {margin-left: 10px;}
 
         /* .post,
         .like,
@@ -144,19 +154,15 @@ $comments = $stmt->fetchAll();
             border-radius: 5px;
             box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
         } */
-
         /* .post p,
         .like p,
         .comment p,
         .friend p {
             margin: 0 0 10px;
         } */
-
         img {
             max-width: 100px;
-            border-radius: 50%;
-        }
-
+            border-radius: 50%;}
         button {
             background-color: #007BFF;
             color: white;
@@ -165,44 +171,37 @@ $comments = $stmt->fetchAll();
             border-radius: 5px;
             cursor: pointer;
         }
-
         a {
             color: #007BFF;
             margin-right: 15px;
         }
-
-        .content{
-            margin-bottom: 30px;
-        }
-
+        .content {margin-bottom: 30px;}
         /* Responsive  */
-        @media screen and (max-width: 1595px){
-            .container{
+        @media screen and (max-width: 1595px) {
+            .container {
                 display: flex;
                 flex-direction: column;
                 margin: 30px;
                 justify-content: center;
                 align-items: center;
+            }
+            .block-1 {
+                height: 400px;
+                border-radius: 20px;
+                width: 90%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                background: white;
+                align-items: center;
+                /* margin-right: 10px; */
+                margin-bottom: 20px;
+                padding: 0;
+            }
+            .block-2 {
+                width: 100%;
+            }
         }
-
-        .block-1 {
-            height: 400px;
-            border-radius: 20px;
-            width: 90%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: white;
-            align-items: center;
-            /* margin-right: 10px; */
-            margin-bottom: 20px;
-            padding: 0;
-        }
-
-        .block-2{
-            width: 100%;
-        }
-}
         /* @media only screen and (max-width: 600px) {
 
             .post,
@@ -232,84 +231,84 @@ $comments = $stmt->fetchAll();
         } */
     </style>
 </head>
-
 <body>
+    <nav class="menu">
+        <a href="dashboard.php">Aller à l'accueil</a>
+        <a href="message.php">Messagerie privée</a>
+        <form action="" method="POST">
+            <input type="text" placeholder="Rechercher..." name="search">
+            <input type="submit" value="Recherche">
+        </form>
+    </nav>
 
-        <nav class="menu">
-            <a href="dashboard.php">Aller à l'accueil</a>
-            <a href="message.php">Messagerie privée</a>
-        </nav>
+    <div class="container">
+        <div class="block-1">
+            <?php if ($profil) : ?>
+                <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
+                <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
+                <form action="edit_profil.php">
+                    <button type="submit">Modifier Profil</button>
+                </form>
+                <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
+                <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
+                <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
+            <?php else : ?>
+                <p>Aucune information de profil à afficher.</p>
+            <?php endif; ?>
+        </div>
 
-        <div class="container">
-            <div class="block-1">
-        <?php if ($profil) : ?>
-            <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
-            <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
-            <form action="edit_profil.php">
-                <button type="submit">Modifier Profil</button>
-            </form>
-            <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
-            <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
-            <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
-        <?php else : ?>
-            <p>Aucune information de profil à afficher.</p>
-        <?php endif; ?>
-    </div>
+        <div class="block-2">
+            <h2>Mes amis</h2>
+            <?php if (!empty($friends)) : ?>
+                <?php foreach ($friends as $friend) : ?>
+                    <div class="friend content">
+                        <p><?= htmlspecialchars($friend['username']) ?></p>
+                        <p>
+                            <button onclick="confirmAction('Êtes-vous sûr de vouloir supprimer cet ami(e) ?', 'status_friend.php?delete_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Supprimer l'ami</button>
+                        </p>
+                        <p>
+                            <button onclick="confirmAction('Êtes-vous sûr de vouloir bloquer cet ami(e) ?', 'status_friend.php?block_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Bloquer l'ami</button>
+                        </p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p>Aucun ami. Prend un curly</p>
+            <?php endif; ?>
 
-    <div class="block-2">
-        <h2>Mes amis</h2>
-    <?php if (!empty($friends)) : ?>
-        <?php foreach ($friends as $friend) : ?>
-            <div class="friend content">
-                <p><?= htmlspecialchars($friend['username']) ?></p>
-                <p>
-                    <button onclick="confirmAction('Êtes-vous sûr de vouloir supprimer cet ami(e) ?', 'status_friend.php?delete_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Supprimer l'ami</button>
-                </p>
-                <p>
-                    <button onclick="confirmAction('Êtes-vous sûr de vouloir bloquer cet ami(e) ?', 'status_friend.php?block_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Bloquer l'ami</button>
-                </p>
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Aucun ami. Prend un curly</p>
-    <?php endif; ?>
+            <h2>Mes Posts</h2>
+            <?php if (!empty($posts)) : ?>
+                <?php foreach ($posts as $post) : ?>
+                    <div class="post content">
+                        <p><?= htmlspecialchars($post['content']) ?></p>
+                        <p>Publié le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p>Aucun post à afficher.</p>
+            <?php endif; ?>
 
-    <h2>Mes Posts</h2>
-    <?php if (!empty($posts)) : ?>
-        <?php foreach ($posts as $post) : ?>
-            <div class="post content">
-                <p><?= htmlspecialchars($post['content']) ?></p>
-                <p>Publié le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Aucun post à afficher.</p>
-    <?php endif; ?>
+            <h2>Mes Likes</h2>
+            <?php if (!empty($likes)) : ?>
+                <?php foreach ($likes as $like) : ?>
+                    <div class="like content">
+                        <p><?= htmlspecialchars($like['content']) ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p>Aucun like à afficher.</p>
+            <?php endif; ?>
 
-    <h2>Mes Likes</h2>
-    <?php if (!empty($likes)) : ?>
-        <?php foreach ($likes as $like) : ?>
-            <div class="like content">
-                <p><?= htmlspecialchars($like['content']) ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Aucun like à afficher.</p>
-    <?php endif; ?>
-
-    <h2>Mes Commentaires</h2>
-    <?php if (!empty($comments)) : ?>
-        <?php foreach ($comments as $comment) : ?>
-            <div class="comment content">
-                <p><?= htmlspecialchars($comment['content']) ?></p>
-                <p>Commenté le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Aucun commentaire à afficher.</p>
-    <?php endif; ?>
-
-
+            <h2>Mes Commentaires</h2>
+            <?php if (!empty($comments)) : ?>
+                <?php foreach ($comments as $comment) : ?>
+                    <div class="comment content">
+                        <p><?= htmlspecialchars($comment['content']) ?></p>
+                        <p>Commenté le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p>Aucun commentaire à afficher.</p>
+            <?php endif; ?>
 </body>
 
 </html>
