@@ -68,7 +68,42 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $messages = $stmt->fetchAll();
+
+
+// Récupérer les messages envoyés par l'utilisateur
+$sql = "
+    SELECT messages.*, users.username AS receiver_username 
+    FROM messages 
+    JOIN users ON messages.receiver_id = users.id 
+    WHERE messages.sender_id = ? 
+    ORDER BY messages.created_at DESC
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$sent_messages = $stmt->fetchAll();
+
+if (isset($_GET['delete_message'])) {
+    $message_id = $_GET['delete_message'];
+
+    // Assurez-vous que le message appartient à l'utilisateur connecté (soit comme récepteur, soit comme expéditeur)
+    $sql = "SELECT * FROM messages WHERE id = ? AND (receiver_id = ? OR sender_id = ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$message_id, $user_id, $user_id]);
+    $message = $stmt->fetch();
+    if ($message) {
+        // Si le message appartient à l'utilisateur, le supprimer
+        $sql = "DELETE FROM messages WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$message_id]);
+
+        echo "Message supprimé avec succès.";
+    } else {
+        echo "Aucun message à supprimer.";
+    }
+}
+
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -76,65 +111,93 @@ $messages = $stmt->fetchAll();
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 10px;
-            background-color: #f8f9fa;
-            color: #343a40;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
         }
+
+        h1, h2 {
+            color: #4b4e4f;
+        }
+
+        a {
+            color: #4267B2;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
         form {
-            margin-bottom: 20px;
-            background-color: #fff;
+            background-color: #ffffff;
             padding: 20px;
-            border-radius: 5px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 15px rgba(0,0,0,0.1);
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type=text], textarea {
+
+        form input[type=text], form textarea {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            box-sizing: border-box;
+            border: 1px solid #ccd0d5;
+            border-radius: 5px;
         }
-        button {
+
+        form button {
+            background-color: #4267B2;
+            color: #ffffff;
             padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        form button:hover {
+            background-color: #365899;
         }
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        a:hover {
-            color: #0056b3;
-        }
+
         .message {
-            background-color: #fff;
+            background-color: #ffffff;
             padding: 20px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 15px rgba(0,0,0,0.1);
         }
-        @media (max-width: 600px) {
-            body {
-                padding: 0;
+
+        /* CSS responsive */
+        @media only screen and (max-width: 600px) {
+            form input[type=text], form textarea {
+                width: 100%;
             }
-            form, .message {
-                margin: 10px;
-                border-radius: 0;
-            }
+        }
+        /* Style du scroll sur plusieru navigateurs */
+        .messages-container {
+            max-height: 400px; /* définissez la hauteur maximale en fonction de vos besoins */
+            overflow-y: auto; /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
+            padding: 10px;
+        }
+
+        /* Personnalisation de la barre de défilement pour les navigateurs basés sur Chromium */
+        .messages-container::-webkit-scrollbar {width: 12px;}
+        .messages-container::-webkit-scrollbar-track {background: #f0f2f5;}
+        .messages-container::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 20px;
+            border: 3px solid #f0f2f5;
+        }
+        .messages-container::-webkit-scrollbar-thumb:hover {background: #555;}
+        /* Personnalisation de la barre de défilement pour Firefox */
+        .messages-container {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f0f2f5;
+            scroll-behavior: smooth;
         }
     </style>
 </head>
 <body>
-    <h1>Messagerie privée</h1>
+<h1>Messagerie privée</h1>
     <a href="profil.php">Retour au profil</a>
     <h2>Envoyer un message</h2>
     <form method="POST">
@@ -146,6 +209,7 @@ $messages = $stmt->fetchAll();
     </form>
 
     <h2>Messages reçus</h2>
+    <div class="messages-container">
     <?php if (!empty($messages)) : ?>
         <?php foreach ($messages as $message) : ?>
             <div class="message">
@@ -158,5 +222,23 @@ $messages = $stmt->fetchAll();
     <?php else : ?>
         <p>Aucun message reçu.</p>
     <?php endif; ?>
+    </div>
+
+    <h2>Messages envoyés</h2>
+    <div class="messages-container">
+<?php if (!empty($sent_messages)) : ?>
+    <?php foreach ($sent_messages as $message) : ?>
+        <div class="message">
+            <p>A: <?= htmlspecialchars($message['receiver_username']) ?></p>
+            <p>Message: <?= htmlspecialchars($message['content']) ?></p>
+            <p>Date: <?= date('d-m-Y H:i', strtotime($message['created_at'])) ?></p>
+            <a href="message.php?delete_message=<?= $message['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</a>
+        </div>
+    <?php endforeach; ?>
+<?php else : ?>
+    <p>Aucun message envoyé.</p>
+<?php endif; ?>
+    </div>
+
 </body>
 </html>

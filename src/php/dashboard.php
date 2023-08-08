@@ -334,6 +334,37 @@ $newNotifications = $stmt->fetchAll();
             border-radius: 50%;
             display: inline-block;
         }
+        .posts-container {
+            max-height: 600px; /* définissez la hauteur maximale en fonction de vos besoins */
+            overflow-y: auto; /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
+            padding: 10px;
+            scroll-behavior: smooth;
+        }
+
+        /* Personnalisation de la barre de défilement pour les navigateurs basés sur Chromium */
+        .posts-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .posts-container::-webkit-scrollbar-track {
+            background: #f0f2f5;
+        }
+
+        .posts-container::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 20px;
+            border: 3px solid #f0f2f5;
+        }
+
+        .posts-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Personnalisation de la barre de défilement pour Firefox */
+        .posts-container {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f0f2f5;
+        }
     </style>
 </head>
 
@@ -403,7 +434,8 @@ $newNotifications = $stmt->fetchAll();
                     <button type="submit">Publier</button>
                 </form>
             </div>
-
+                
+            <div class="posts-container">
             <?php foreach ($posts as $post) : ?>
                 <div class="post">
                     <h2><?= $post['content'] ?></h2>
@@ -443,6 +475,7 @@ $newNotifications = $stmt->fetchAll();
                 <?php endforeach; ?>
 
                 </div>
+            </div>
                 <footer>Social Media &copy;2023</footer>
                 <!-- Script burger menu -->
                 <script>
