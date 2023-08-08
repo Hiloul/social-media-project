@@ -166,7 +166,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Récupérer les notifications pour l'utilisateur actuel
+$sql = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$notifications = $stmt->fetchAll();
 
+// Gérer la suppression d'une notification
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id'])) {
+    $delete_notification_id = $_POST['delete_notification_id'];
+
+    // Supprimer la notification de la base de données
+    $sql = "DELETE FROM notifications WHERE id = ? AND user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$delete_notification_id, $user_id]);
+
+    // Rediriger l'utilisateur vers la page précédente
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
+    exit();
+}
 
 ?>
 
@@ -324,8 +342,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 padding: 6px 12px;
             }
         } */
-    </style>
 
+        .burger-menu {
+    width: 300px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    padding: 20px;
+    background-color: #3b5998;
+    color: #fff;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    font-family: Arial, sans-serif;
+    box-shadow: -2px 0px 5px 0px rgba(0,0,0,0.1);
+    z-index: 999;
+}
+
+.burger-menu h2 {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.burger-menu a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    margin-top: 20px;
+    display: block;
+}
+
+.burger-menu .notification {
+    background-color: #4a69bd;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.burger-menu .notification.unread {
+    background-color: #6a89cc;
+}
+
+.burger-menu .notification p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.burger-menu-btn {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 1000;
+}
+    </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -345,7 +418,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </div>
         <div class="notif">
-            <a href="notification.php">Notifications</a>
+            <div class="burger-menu" id="burgerMenu">
+        <h2>Notifications</h2>
+        <?php if (!empty($notifications)) : ?>
+            <?php foreach ($notifications as $notification) : ?>
+                <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
+                    <p><?= htmlspecialchars($notification['content']) ?></p>
+                    <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
+                    <!-- Ajout du formulaire et du bouton de suppression de notification -->
+                    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
+                        <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
+                        <input type="submit" value="Supprimer">
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <p>Aucune notification</p>
+        <?php endif; ?>
+        <a href="profil.php">Retour</a>
+    </div>
+            <button class="burger-menu-btn" id="burgerMenuBtn"><i class="fas fa-bell"></i></button>
             <a href="setting_account.php">Parametres</a>
         </div>
         <div class="block-1">
@@ -366,19 +458,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endif; ?>
         </div>
 
-
         <div class="block-2">
             <h2>Mes amis</h2>
             <?php if (!empty($friends)) : ?>
                 <?php foreach ($friends as $friend) : ?>
                     <div class="friend content">
                         <p><?= htmlspecialchars($friend['username']) ?></p>
-                        <p>
-                            <button onclick="confirmAction('Êtes-vous sûr de vouloir supprimer cet ami(e) ?', 'status_friend.php?delete_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Supprimer l'ami</button>
-                        </p>
-                        <p>
-                            <button onclick="confirmAction('Êtes-vous sûr de vouloir bloquer cet ami(e) ?', 'status_friend.php?block_friend=<?= htmlspecialchars(intval($friend['id']), ENT_QUOTES, 'UTF-8') ?>')">Bloquer l'ami</button>
-                        </p>
+                        <!-- Bouton de suppression d'ami. Cela envoie une requête GET à votre script. -->
+                        <form action="status_friend.php" method="get">
+                            <input type="hidden" name="delete_friend" value="<?php echo $friend['id']; ?>">
+                            <button type="submit">Supprimer l'ami</button>
+                        </form>
+                        <!-- Bouton de blocage d'ami. Cela envoie une requête POST à votre script. -->
+                        <form action="status_friend.php" method="post">
+                            <input type="hidden" name="friend_id" value="<?php echo $friend['id']; ?>">
+                            <button type="submit">Bloquer l'ami</button>
+                        </form>
                     </div>
                 <?php endforeach; ?>
             <?php else : ?>
@@ -419,6 +514,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php else : ?>
                 <p>Aucun commentaire à afficher.</p>
             <?php endif; ?>
+
+            <script>
+    document.getElementById('burgerMenuBtn').addEventListener('click', function () {
+        var burgerMenu = document.getElementById('burgerMenu');
+
+        if (burgerMenu.style.transform === 'translateX(0px)') {
+            burgerMenu.style.transform = 'translateX(100%)';
+        } else {
+            burgerMenu.style.transform = 'translateX(0)';
+        }
+    });
+</script>
+   
 </body>
 
 </html>
+

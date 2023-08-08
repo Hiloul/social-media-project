@@ -90,11 +90,9 @@ if (isset($_GET['delete_friend'])) {
     echo "No delete_friend_id provided.";
 }
 
-
-
 // Block a friend
-if (isset($_POST['block_friend_id'])) {
-    $friend_to_block_id = filter_var($_POST['block_friend_id'], FILTER_SANITIZE_NUMBER_INT);
+if (isset($_POST['friend_id'])) {
+    $friend_to_block_id = filter_var($_POST['friend_id'], FILTER_SANITIZE_NUMBER_INT);
 
     // Start the transaction
     $pdo->beginTransaction();
@@ -135,6 +133,45 @@ if (isset($_POST['block_friend_id'])) {
     echo "No block_friend_id provided.";
 }
 
-?>
+// Envoie une demande d'ami
+if (isset($_POST['friend_id'])) {
+    $friend_id = filter_var($_POST['friend_id'], FILTER_SANITIZE_NUMBER_INT);
 
+    // Commencer la transaction
+    $pdo->beginTransaction();
 
+    try {
+        // Vérifier si une demande d'ami a déjà été envoyée
+        $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status = 'PENDING'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_id]);
+
+        if ($stmt->rowCount() > 0) {
+            echo "Une demande d'ami a déjà été envoyée à cet utilisateur.";
+            $pdo->rollBack();
+            exit();
+        }
+
+        // Insérer une nouvelle demande d'ami avec un statut 'PENDING'
+        $sql = "INSERT INTO friends (user_id, friend_id, status, created_at, updated_at) 
+                VALUES (?, ?, 'PENDING', NOW(), NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_id]);
+
+        if ($stmt->rowCount() > 0) {
+            echo "Demande d'ami envoyée avec succès.";
+            // Valider la transaction
+            $pdo->commit();
+        } else {
+            echo "Il y a eu un problème lors de l'envoi de la demande d'ami.";
+            // Annuler la transaction
+            $pdo->rollBack();
+        }
+    } catch (PDOException $e) {
+        // Annuler la transaction en cas d'erreur
+        $pdo->rollBack();
+        echo 'Erreur: ' . $e->getMessage();
+    }
+} else {
+    echo "No friend_id provided.";
+}

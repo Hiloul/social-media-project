@@ -86,10 +86,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mon profil</title>
+    <title>Modifier Profil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #5C6BC0;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3F51B5;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media screen and (max-width: 500px) {
+            form {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Modifier Profil</h1>
+    <h1>Mon Profil</h1>
 
     <form method="POST" enctype="multipart/form-data">
         <label for="bio">Bio :</label>
@@ -103,5 +153,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">Enregistrer</button>
     </form>
+        <a href="profil.php">Retour</a>
 </body>
 </html>
