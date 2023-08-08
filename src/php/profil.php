@@ -397,6 +397,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
     top: 20px;
     z-index: 1000;
 }
+
+.burger-menu2 {
+        width: 260px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        padding: 20px;
+        background-color: #3b5998;
+        color: #fff;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        font-family: Arial, sans-serif;
+        box-shadow: 2px 0px 5px 0px rgba(0,0,0,0.1);
+    }
+    .burger-menu2.open {
+        transform: translateX(0);
+    }
+    .burger-menu2 h2 {
+        color: #fff;
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    .burger-menu2 a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+        line-height: 2.5;
+        display: block;
+    }
+    .burger-menu2 a:hover {
+        background-color: rgba(0,0,0,0.1);
+        border-radius: 5px;
+        padding: 2px 10px;
+    }
     </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -437,8 +473,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         <?php endif; ?>
         <a href="profil.php">Retour</a>
     </div>
-            <button class="burger-menu-btn" id="burgerMenuBtn"><i class="fas fa-bell"></i></button>
-            <a href="setting_account.php">Parametres</a>
+            
+            <div class="burger-menu2" id="burgerMenu2">
+        <h2>Paramètres</h2>
+        <a href="edit_profil.php">Mise à jour du profil</a>
+        <a href="change_password.php">Changer le mot de passe</a>
+        <a href="privacy_settings.php">Paramètres de confidentialité</a>
+        <a href="notification.php">Paramètres de notification</a>
+        <a href="profil.php">Retour</a>
+    </div>
+    <!-- Boutton cloche et rouage -->
+    <button class="burger-menu-btn" id="burgerMenuBtn"><i class="fas fa-bell"></i></button>
+    <button id="burgerButtonSettings"><i class="fa-solid fa-gear"></i></button>
+
         </div>
         <div class="block-1">
             <?php if ($profil) : ?>
@@ -525,6 +572,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             burgerMenu.style.transform = 'translateX(0)';
         }
     });
+
+    var burgerMenu2 = document.getElementById('burgerMenu2');
+        var burgerButton2 = document.getElementById('burgerButtonSettings');
+
+        burgerButton2.addEventListener('click', function() {
+            burgerMenu2.classList.toggle('open');
+        });
 </script>
    
 </body>
