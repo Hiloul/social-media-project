@@ -176,6 +176,8 @@ if (isset($_GET['delete_comment'])) {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            resize: none;
+            outline: none;
         }
         button {
             background-color: #007BFF;
