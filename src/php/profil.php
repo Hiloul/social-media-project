@@ -59,10 +59,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Récupérer les informations du profil
-$sql = "SELECT * FROM profils WHERE user_id = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$user_id]);
-$profil = $stmt->fetch();
+    $sql = "SELECT * FROM profils WHERE user_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$user_id]);
+    $profil = $stmt->fetch();
     // Si une recherche a été soumise
     if (isset($_POST['search']) && !empty($_POST['search'])) {
         $search = $_POST['search'];
@@ -114,8 +114,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $comments = $stmt->fetchAll();
 
-
-// Vérification de la soumission du formulaire
+// Vérification de la soumission du formulaire chercher user
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['search']) && trim($_POST['search']) !== '') {
         $search = $_POST['search'];
@@ -129,13 +128,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Affichage des résultats
         foreach ($results as $row) {
-            echo "<a href='profil.php?user_id=".$row['id']."'>".$row['username']."</a><br>";
+            echo "<p>" . htmlspecialchars($row['username']) . "</p>";
+
+            // Requête pour vérifier si une demande d'ami a déjà été envoyée
+            $stmt = $pdo->prepare("SELECT * FROM friends WHERE user_id = ? AND friend_id = ?");
+            $stmt->execute([$_SESSION['user_id'], $row['id']]);
+            $friend_request = $stmt->fetch();
+
+            if ($friend_request) {
+                echo "<p>Demande d'amitié envoyée</p>";
+            } else {
+                // Afficher le bouton d'ajout d'ami
+                echo "<form action='send_friend_request.php' method='POST'>";
+                echo "<input type='hidden' name='friend_id' value='" . htmlspecialchars($row['id']) . "'>";
+                echo "<input type='submit' value='Envoyer une demande ami'>";
+                echo "</form>";
+            }
         }
+    } else if (isset($_POST['friend_id'])) {
+        $friend_id = $_POST['friend_id'];
+        $user_id = $_SESSION['user_id'];
+
+        // Ajoute la demande d'ami dans la table 'friends'
+        $sql = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id, $friend_id]);
+
+        // Crée une notification pour l'utilisateur qui reçoit la demande d'ami
+        $content = "Vous avez reçu une demande d'ami de " . $_SESSION['username'];
+        $sql = "INSERT INTO notifications (user_id, content, status, created_at, updated_at) 
+                VALUES (?, ?, 0, NOW(), NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$friend_id, $content]);
+
+        // Redirige l'utilisateur vers la page précédente
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
     }
 }
 
 
+
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -291,41 +325,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } */
     </style>
+
 </head>
 
 <body>
-    <nav class="menu">
-        <a href="dashboard.php">Aller à l'accueil</a>
-        <a href="message.php">Messagerie privée</a>
-        <form action="profil.php" method="POST">
-            <label for="search">Rechercher:</label>
-            <input type="text" id="search" placeholder="Rechercher..." name="search" required>
-            <input type="submit" value="Recherche">
-        </form>
-    </nav>
-
-    <div class="afficher_profil_recherche">
-
-    </div>
 
     <div class="container">
-    <div class="block-1">
-    <?php if ($profil) : ?>
-        <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
-        <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
-        <form action="edit_profil.php">
-            <button type="submit">Modifier Profil</button>
-        </form>
-        <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
-        <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
-        <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
-    <?php else : ?>
-        <p>Aucune information de profil à afficher.</p>
-        <form action="edit_profil.php">
-            <button type="submit">Créer Profil</button>
-        </form>
-    <?php endif; ?>
-</div>
+        <nav class="menu">
+            <a href="dashboard.php">Aller à l'accueil</a>
+            <a href="message.php">Messagerie privée</a>
+            <form action="profil.php" method="POST">
+                <label for="search">Rechercher:</label>
+                <input type="text" id="search" placeholder="Rechercher..." name="search" required>
+                <input type="submit" value="Recherche">
+            </form>
+        </nav>
+
+        <div class="afficher_profil_recherche">
+
+        </div>
+        <div class="notif">
+            <a href="notification.php">Notifications</a>
+            <a href="setting_account.php">Parametres</a>
+        </div>
+        <div class="block-1">
+            <?php if ($profil) : ?>
+                <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
+                <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
+                <form action="edit_profil.php">
+                    <button type="submit">Modifier Profil</button>
+                </form>
+                <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
+                <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
+                <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
+            <?php else : ?>
+                <p>Aucune information de profil à afficher.</p>
+                <form action="edit_profil.php">
+                    <button type="submit">Créer Profil</button>
+                </form>
+            <?php endif; ?>
+        </div>
 
 
         <div class="block-2">
