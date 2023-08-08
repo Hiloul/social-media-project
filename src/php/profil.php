@@ -437,7 +437,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             border-radius: 5px;
             padding: 2px 10px;
         }
-        
+
+        .scroll-container {
+            max-height: 300px;
+            /* définissez la hauteur maximale en fonction de vos besoins */
+            overflow-y: auto;
+            /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
+            padding: 10px;
+            scroll-behavior: smooth;
+        }
+
+        /* Personnalisation de la barre de défilement pour les navigateurs basés sur Chromium */
+        .scroll-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: #f0f2f5;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 20px;
+            border: 3px solid #f0f2f5;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Personnalisation de la barre de défilement pour Firefox */
+        .scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #f0f2f5;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -451,14 +484,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             <!-- Messagerie privée -->
             <a href="message.php"><i class="fa-solid fa-envelope"></i></a>
             <form action="profil.php" method="POST">
-            <!-- Rechercher: -->
+                <!-- Rechercher: -->
                 <label for="search"><i class="fa-solid fa-magnifying-glass"></i></label>
                 <input type="text" id="search" placeholder="Rechercher..." name="search" required>
                 <input type="submit" value="Ok">
             </form>
         </nav>
 
-        
+
 
         <div class="afficher_profil_recherche">
 
@@ -516,50 +549,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         </div>
 
         <div class="block-2">
+            <!-- Amis -->
             <h2>Mes amis</h2>
-            <?php if (!empty($friends)) : ?>
-                <?php foreach ($friends as $friend) : ?>
-                    <div class="friend content">
-                        <p><?= htmlspecialchars($friend['username']) ?></p>
-                        <!-- Bouton de suppression d'ami. Cela envoie une requête GET à votre script. -->
-                        <form action="status_friend.php" method="get">
-                            <input type="hidden" name="delete_friend" value="<?php echo $friend['id']; ?>">
-                            <button type="submit">Supprimer l'ami</button>
-                        </form>
-                        <!-- Bouton de blocage d'ami. Cela envoie une requête POST à votre script. -->
-                        <form action="status_friend.php" method="post">
-                            <input type="hidden" name="friend_id" value="<?php echo $friend['id']; ?>">
-                            <button type="submit">Bloquer l'ami</button>
-                        </form>
-                    </div>
-                <?php endforeach; ?>
-            <?php else : ?>
-                <p>Aucun ami. Prend un curly</p>
-            <?php endif; ?>
+            <div class="scroll-container">
+                <?php if (!empty($friends)) : ?>
+                    <?php foreach ($friends as $friend) : ?>
+                        <div class="friend content">
+                            <p><?= htmlspecialchars($friend['username']) ?></p>
+                            <!-- Bouton de suppression d'ami. Cela envoie une requête GET à votre script. -->
+                            <form action="status_friend.php" method="get">
+                                <input type="hidden" name="delete_friend" value="<?php echo $friend['id']; ?>">
+                                <button type="submit">Supprimer l'ami</button>
+                            </form>
+                            <!-- Bouton de blocage d'ami. Cela envoie une requête POST à votre script. -->
+                            <form action="status_friend.php" method="post">
+                                <input type="hidden" name="friend_id" value="<?php echo $friend['id']; ?>">
+                                <button type="submit">Bloquer l'ami</button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <p>Aucun ami. Prend un curly</p>
+                <?php endif; ?>
+            </div>
 
+            <!-- Posts -->
             <h2>Mes Posts</h2>
-            <?php if (!empty($posts)) : ?>
-                <?php foreach ($posts as $post) : ?>
-                    <div class="post content">
-                        <p><?= htmlspecialchars($post['content']) ?></p>
-                        <p>Publié le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
-                    </div>
-                <?php endforeach; ?>
-            <?php else : ?>
-                <p>Aucun post à afficher.</p>
-            <?php endif; ?>
+            <div class="scroll-container">
+                <?php if (!empty($posts)) : ?>
+                    <?php foreach ($posts as $post) : ?>
+                        <div class="post content">
+                            <p><?= htmlspecialchars($post['content']) ?></p>
+                            <p>Publié le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <p>Aucun post à afficher.</p>
+                <?php endif; ?>
 
-            <h2>Mes Likes</h2>
-            <?php if (!empty($likes)) : ?>
-                <?php foreach ($likes as $like) : ?>
-                    <div class="like content">
-                        <p><?= htmlspecialchars($like['content']) ?></p>
-                    </div>
-                <?php endforeach; ?>
-            <?php else : ?>
-                <p>Aucun like à afficher.</p>
-            <?php endif; ?>
+                <h2>Mes Likes</h2>
+                <?php if (!empty($likes)) : ?>
+                    <?php foreach ($likes as $like) : ?>
+                        <div class="like content">
+                            <p><?= htmlspecialchars($like['content']) ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <p>Aucun like à afficher.</p>
+                <?php endif; ?>
+            </div>
 
+            <!-- Commentaires -->
             <h2>Mes Commentaires</h2>
             <?php if (!empty($comments)) : ?>
                 <?php foreach ($comments as $comment) : ?>
@@ -571,25 +611,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             <?php else : ?>
                 <p>Aucun commentaire à afficher.</p>
             <?php endif; ?>
+        </div>
+        <script>
+            document.getElementById('burgerMenuBtn').addEventListener('click', function() {
+                var burgerMenu = document.getElementById('burgerMenu');
 
-            <script>
-                document.getElementById('burgerMenuBtn').addEventListener('click', function() {
-                    var burgerMenu = document.getElementById('burgerMenu');
+                if (burgerMenu.style.transform === 'translateX(0px)') {
+                    burgerMenu.style.transform = 'translateX(100%)';
+                } else {
+                    burgerMenu.style.transform = 'translateX(0)';
+                }
+            });
 
-                    if (burgerMenu.style.transform === 'translateX(0px)') {
-                        burgerMenu.style.transform = 'translateX(100%)';
-                    } else {
-                        burgerMenu.style.transform = 'translateX(0)';
-                    }
-                });
+            var burgerMenu2 = document.getElementById('burgerMenu2');
+            var burgerButton2 = document.getElementById('burgerButtonSettings');
 
-                var burgerMenu2 = document.getElementById('burgerMenu2');
-                var burgerButton2 = document.getElementById('burgerButtonSettings');
-
-                burgerButton2.addEventListener('click', function() {
-                    burgerMenu2.classList.toggle('open');
-                });
-            </script>
+            burgerButton2.addEventListener('click', function() {
+                burgerMenu2.classList.toggle('open');
+            });
+        </script>
 
 </body>
 
