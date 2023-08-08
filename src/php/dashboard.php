@@ -137,6 +137,13 @@ if (isset($_GET['delete_comment'])) {
     header('Location: dashboard.php');
     exit();
 }
+
+// Récupérer les notifications pour l'utilisateur actuel
+$sql = "SELECT * FROM notifications WHERE user_id = ? AND status = 'unread'";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$newNotifications = $stmt->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -154,22 +161,29 @@ if (isset($_GET['delete_comment'])) {
             background-color: #f0f0f0;
             color: #333;
         }
-        h1, h3, h4 {
+
+        h1,
+        h3,
+        h4 {
             color: #444;
         }
+
         a {
             color: #007BFF;
             text-decoration: none;
         }
+
         a:hover {
             color: #0056b3;
         }
+
         .post {
             background-color: #fff;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 5px;
         }
+
         textarea {
             width: 100%;
             margin-bottom: 10px;
@@ -179,6 +193,7 @@ if (isset($_GET['delete_comment'])) {
             resize: none;
             outline: none;
         }
+
         button {
             background-color: #007BFF;
             color: #fff;
@@ -187,9 +202,11 @@ if (isset($_GET['delete_comment'])) {
             border-radius: 5px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         footer {
             display: flex;
             justify-content: center;
@@ -199,21 +216,127 @@ if (isset($_GET['delete_comment'])) {
             color: #fff;
             font-size: 14px;
             margin-top: 20px;
-            
+
             bottom: 0;
             width: 100%;
         }
+
         footer::before {
             content: "\00a9";
             margin-right: 5px;
         }
+
         @media (max-width: 600px) {
             body {
                 padding: 10px;
             }
         }
+
+        .burger-menu {
+            width: 300px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            padding: 20px;
+            background-color: #3b5998;
+            color: #fff;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            font-family: Arial, sans-serif;
+            box-shadow: -2px 0px 5px 0px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
+
+        .burger-menu h2 {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .burger-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            margin-top: 20px;
+            display: block;
+        }
+
+        .burger-menu .notification {
+            background-color: #4a69bd;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .burger-menu .notification.unread {
+            background-color: #6a89cc;
+        }
+
+        .burger-menu .notification p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .burger-menu-btn {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        .burger-menu2 {
+            width: 260px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            padding: 20px;
+            background-color: #3b5998;
+            color: #fff;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            font-family: Arial, sans-serif;
+            box-shadow: 2px 0px 5px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .burger-menu2.open {
+            transform: translateX(0);
+        }
+
+        .burger-menu2 h2 {
+            color: #fff;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .burger-menu2 a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            line-height: 2.5;
+            display: block;
+        }
+
+        .burger-menu2 a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 2px 10px;
+        }
+
+        .new-notification-dot {
+            height: 10px;
+            width: 10px;
+            background-color: red;
+            border-radius: 50%;
+            display: inline-block;
+        }
     </style>
 </head>
+
 <body>
     <h1>
         Bienvenue à toi,
@@ -225,61 +348,122 @@ if (isset($_GET['delete_comment'])) {
         }
         ?>!
     </h1>
-    <div class="container">
-        <h3>Mon tableau de bord: </h3>
-        <a href="http://localhost/php/social-media-project/index.html"><button><i class="fa-solid fa-house"></i></button></a>
-        <a href="profil.php"><button><i class="fa-solid fa-user"></i></button></a>
-        <a href="logout.php"><button><i class="fa-solid fa-right-from-bracket"></i></button></a>
 
-        <div class="publication">
-            <h4>Publier quelque chose: </h4>
-            <form id="postForm" method="POST" action="post.php">
-                <textarea name="content" id="content" rows="5" required maxlength="280" placeholder="Quoi de neuf ?"></textarea>
-                <br>
-                <br>
-                <button type="submit">Publier</button>
-            </form>
+    <div class="notif">
+        <div class="burger-menu" id="burgerMenu">
+            <h2>Notifications</h2>
+            <?php if (!empty($notifications)) : ?>
+                <?php foreach ($notifications as $notification) : ?>
+                    <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
+                        <p><?= htmlspecialchars($notification['content']) ?></p>
+                        <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
+                        <!-- Ajout du formulaire et du bouton de suppression de notification -->
+                        <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
+                            <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
+                            <input type="submit" value="Supprimer">
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p>Aucune notification</p>
+            <?php endif; ?>
+            <a href="profil.php">Retour</a>
+        </div>
+        <!-- Boutton cloche et rouage -->
+        <button class="burger-menu-btn" id="burgerMenuBtn">
+            <i class="fas fa-bell"></i>
+            <!-- Point rouge pour les nouvelles notifications -->
+            <?php if (!empty($newNotifications)) : ?>
+                <span class="new-notification-dot"></span>
+            <?php endif; ?>
+        </button>
+        
+        <div class="burger-menu2" id="burgerMenu2">
+            <h2>Paramètres</h2>
+            <a href="edit_profil.php">Mise à jour du profil</a>
+            <a href="change_password.php">Changer le mot de passe</a>
+            <a href="privacy_settings.php">Paramètres de confidentialité</a>
+            <a href="notification.php">Paramètres de notification</a>
+            <a href="dashboard.php">Retour</a>
         </div>
 
-        <?php foreach ($posts as $post) : ?>
-            <div class="post">
-                <h2><?= $post['content'] ?></h2>
-                <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
-                <p><?= $post['likes'] ?> likes</p>
-                <a href="dashboard.php?like=<?= $post['id'] ?>">Like</a>
-                <?php if ($_SESSION['username'] === $post['username']) : ?>
-                    <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
-                    <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
-                <?php endif; ?>
+        <button id="burgerButtonSettings"><i class="fa-solid fa-gear"></i></button>
+        <div class="container">
+            <h3>Mon tableau de bord: </h3>
+            <a href="http://localhost/php/social-media-project/index.html"><button><i class="fa-solid fa-house"></i></button></a>
+            <a href="profil.php"><button><i class="fa-solid fa-user"></i></button></a>
+            <a href="logout.php"><button><i class="fa-solid fa-right-from-bracket"></i></button></a>
 
-              <!-- Affichage des commentaires -->
-<div class="comments">
-    <?php if (empty($post['comments'])) : ?>
-        <p>0 commentaires</p>
-    <?php else : ?>
-        <?php foreach ($post['comments'] as $comment) : ?>
-            <div class="comment">
-                <p><?= $comment['content'] ?></p>
-                <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
-                <?php if ($_SESSION['username'] === $comment['username']) : ?>
-                    <a href="dashboard.php?delete_comment=<?= $comment['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">Supprimer</a>
-                    <a href="edit_comment.php?id=<?= $comment['id'] ?>">Modifier</a>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
-
-                <!-- Formulaire de commentaire -->
-                <form id="commentForm" method="post" action="comment.php">
-                    <input type="hidden" id="post_id" name="post_id" value="<?= htmlspecialchars($post['id']) ?>">
-                    <textarea id="content" name="content" placeholder="Ajouter un commentaire..." required></textarea>
-                    <button type="submit">Publier le commentaire</button>
+            <div class="publication">
+                <h4>Publier quelque chose: </h4>
+                <form id="postForm" method="POST" action="post.php">
+                    <textarea name="content" id="content" rows="5" required maxlength="280" placeholder="Quoi de neuf ?"></textarea>
+                    <br>
+                    <br>
+                    <button type="submit">Publier</button>
                 </form>
-
-            <?php endforeach; ?>
-
             </div>
-            <footer>Social Media &copy;2023</footer>
+
+            <?php foreach ($posts as $post) : ?>
+                <div class="post">
+                    <h2><?= $post['content'] ?></h2>
+                    <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
+                    <p><?= $post['likes'] ?> likes</p>
+                    <a href="dashboard.php?like=<?= $post['id'] ?>">Like</a>
+                    <?php if ($_SESSION['username'] === $post['username']) : ?>
+                        <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
+                        <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
+                    <?php endif; ?>
+
+                    <!-- Affichage des commentaires -->
+                    <div class="comments">
+                        <?php if (empty($post['comments'])) : ?>
+                            <p>0 commentaires</p>
+                        <?php else : ?>
+                            <?php foreach ($post['comments'] as $comment) : ?>
+                                <div class="comment">
+                                    <p><?= $comment['content'] ?></p>
+                                    <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
+                                    <?php if ($_SESSION['username'] === $comment['username']) : ?>
+                                        <a href="dashboard.php?delete_comment=<?= $comment['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">Supprimer</a>
+                                        <a href="edit_comment.php?id=<?= $comment['id'] ?>">Modifier</a>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Formulaire de commentaire -->
+                    <form id="commentForm" method="post" action="comment.php">
+                        <input type="hidden" id="post_id" name="post_id" value="<?= htmlspecialchars($post['id']) ?>">
+                        <textarea id="content" name="content" placeholder="Ajouter un commentaire..." required></textarea>
+                        <button type="submit">Publier le commentaire</button>
+                    </form>
+
+                <?php endforeach; ?>
+
+                </div>
+                <footer>Social Media &copy;2023</footer>
+                <!-- Script burger menu -->
+                <script>
+                    document.getElementById('burgerMenuBtn').addEventListener('click', function() {
+                        var burgerMenu = document.getElementById('burgerMenu');
+
+                        if (burgerMenu.style.transform === 'translateX(0px)') {
+                            burgerMenu.style.transform = 'translateX(100%)';
+                        } else {
+                            burgerMenu.style.transform = 'translateX(0)';
+                        }
+                    });
+
+                    var burgerMenu2 = document.getElementById('burgerMenu2');
+                    var burgerButton2 = document.getElementById('burgerButtonSettings');
+
+                    burgerButton2.addEventListener('click', function() {
+                        burgerMenu2.classList.toggle('open');
+                    });
+                </script>
+
 </body>
+
 </html>
