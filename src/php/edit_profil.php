@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Modifier profil</title>
+    <title>Mon profil</title>
 </head>
 <body>
     <h1>Modifier Profil</h1>

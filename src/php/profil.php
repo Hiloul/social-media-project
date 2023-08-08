@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
-        
+
         // Récupération des informations du profil
         $sql = "SELECT profile_picture FROM profils WHERE user_id = ?";
         $stmt = $pdo->prepare($sql);
@@ -58,6 +58,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([$profile_picture, $bio, $birthdate, $user_id]);
     }
 
+    // Récupérer les informations du profil
+$sql = "SELECT * FROM profils WHERE user_id = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$profil = $stmt->fetch();
     // Si une recherche a été soumise
     if (isset($_POST['search']) && !empty($_POST['search'])) {
         $search = $_POST['search'];
@@ -112,7 +117,7 @@ $comments = $stmt->fetchAll();
 
 // Vérification de la soumission du formulaire
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['search'])) {
+    if (isset($_POST['search']) && trim($_POST['search']) !== '') {
         $search = $_POST['search'];
 
         // Requête pour la recherche
@@ -124,10 +129,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Affichage des résultats
         foreach ($results as $row) {
-            echo $row['username'] . "<br>";
+            echo "<a href='profil.php?user_id=".$row['id']."'>".$row['username']."</a><br>";
         }
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -142,6 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #333;
             margin: 0;
         }
+
         .menu {
             margin-top: 10px;
             height: 60px;
@@ -151,11 +159,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             align-items: center;
             border-radius: 20px;
         }
+
         .container {
             display: flex;
             margin: 30px;
             justify-content: space-between;
         }
+
         .block-1 {
             height: 400px;
             border-radius: 20px;
@@ -168,16 +178,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-right: 10px;
             margin-bottom: 20px;
         }
+
         .block-2 {
             width: 60%;
             background: white;
             border-radius: 20px;
         }
-        h1,h2 {
+
+        h1,
+        h2 {
             color: #444;
             margin-left: 10px;
         }
-        p {margin-left: 10px;}
+
+        p {
+            margin-left: 10px;
+        }
 
         /* .post,
         .like,
@@ -197,7 +213,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } */
         img {
             max-width: 100px;
-            border-radius: 50%;}
+            border-radius: 50%;
+        }
+
         button {
             background-color: #007BFF;
             color: white;
@@ -206,11 +224,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 5px;
             cursor: pointer;
         }
+
         a {
             color: #007BFF;
             margin-right: 15px;
         }
-        .content {margin-bottom: 30px;}
+
+        .content {
+            margin-bottom: 30px;
+        }
+
         /* Responsive  */
         @media screen and (max-width: 1595px) {
             .container {
@@ -220,6 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 justify-content: center;
                 align-items: center;
             }
+
             .block-1 {
                 height: 400px;
                 border-radius: 20px;
@@ -233,10 +257,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 margin-bottom: 20px;
                 padding: 0;
             }
+
             .block-2 {
                 width: 100%;
             }
         }
+
         /* @media only screen and (max-width: 600px) {
 
             .post,
@@ -266,31 +292,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } */
     </style>
 </head>
+
 <body>
     <nav class="menu">
         <a href="dashboard.php">Aller à l'accueil</a>
         <a href="message.php">Messagerie privée</a>
-        <form action="" method="POST">
-            <input type="text" placeholder="Rechercher..." name="search">
+        <form action="profil.php" method="POST">
+            <label for="search">Rechercher:</label>
+            <input type="text" id="search" placeholder="Rechercher..." name="search" required>
             <input type="submit" value="Recherche">
         </form>
     </nav>
 
+    <div class="afficher_profil_recherche">
+
+    </div>
+
     <div class="container">
-        <div class="block-1">
-            <?php if ($profil) : ?>
-                <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
-                <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
-                <form action="edit_profil.php">
-                    <button type="submit">Modifier Profil</button>
-                </form>
-                <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
-                <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
-                <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
-            <?php else : ?>
-                <p>Aucune information de profil à afficher.</p>
-            <?php endif; ?>
-        </div>
+    <div class="block-1">
+    <?php if ($profil) : ?>
+        <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
+        <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
+        <form action="edit_profil.php">
+            <button type="submit">Modifier Profil</button>
+        </form>
+        <p><strong>Biographie : </strong><?= htmlspecialchars($profil['bio']) ?></p>
+        <p><strong>Date de naissance : </strong><?= date("d-m-Y", strtotime($profil['birthdate'])) ?></p>
+        <p><strong>Créé depuis le : </strong><?= date("d-m-Y H:i", strtotime($profil['created_at'])) ?></p>
+    <?php else : ?>
+        <p>Aucune information de profil à afficher.</p>
+        <form action="edit_profil.php">
+            <button type="submit">Créer Profil</button>
+        </form>
+    <?php endif; ?>
+</div>
+
 
         <div class="block-2">
             <h2>Mes amis</h2>
@@ -345,4 +381,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <p>Aucun commentaire à afficher.</p>
             <?php endif; ?>
 </body>
+
 </html>
