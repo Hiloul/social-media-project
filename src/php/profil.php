@@ -18,48 +18,44 @@ $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
 
-// Récupération des informations du profil
-$sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE user_id = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$user_id]);
-$profil = $stmt->fetch();
-
 // Vérification de la soumission du formulaire
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Récupération des données du formulaire
-    $profile_picture = '';  // Initialisez à une chaîne vide
-    if (isset($_FILES['profile_picture'])) {
-        $file_tmp = $_FILES['profile_picture']['tmp_name'];
-        $file_name = $_FILES['profile_picture']['name'];
-
-        // Vérifiez si le fichier a été correctement téléchargé
-        if (is_uploaded_file($file_tmp)) {
-            // Déplacez le fichier dans le répertoire souhaité
-            $destination = 'uploads/' . $file_name;
-            if (move_uploaded_file($file_tmp, $destination)) {
-                // Si le fichier a été correctement déplacé, enregistrez le chemin du fichier
-                $profile_picture = $destination;
-            }
-        }
-    }
     $bio = $_POST['bio'] ?? '';
     $birthdate = $_POST['birthdate'] ?? '';
 
     // Si un formulaire de modification du profil a été soumis
-    if (!empty($profile_picture) || !empty($bio) || !empty($birthdate)) {
+    if (!empty($bio) || !empty($birthdate)) {
+        // Si une nouvelle photo a été téléchargée
+        if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
+            $file_tmp = $_FILES['profile_picture']['tmp_name'];
+            $file_name = $_FILES['profile_picture']['name'];
+
+            // Vérifiez si le fichier a été correctement téléchargé
+            if (is_uploaded_file($file_tmp)) {
+                // Déplacez le fichier dans le répertoire souhaité
+                $destination = 'uploads/' . $file_name;
+                if (move_uploaded_file($file_tmp, $destination)) {
+                    // Si le fichier a été correctement déplacé, enregistrez le chemin du fichier
+                    $profile_picture = $destination;
+                }
+            }
+        }
+        
+        // Récupération des informations du profil
+        $sql = "SELECT profile_picture FROM profils WHERE user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$user_id]);
+        $profil = $stmt->fetch();
+
+        if (empty($profile_picture)) {
+            $profile_picture = $profil['profile_picture'];
+        }
+
         // Mettre à jour le profil si un profil existe déjà
-        if ($profil) {
-            $sql = "UPDATE profils SET profile_picture = ?, bio = ?, birthdate = ?, updated_at = NOW() WHERE user_id = ?";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$profile_picture, $bio, $birthdate, $user_id]);
-        }
-        // Créer un nouveau profil s'il n'existe pas encore
-        else {
-            $sql = "INSERT INTO profils (user_id, profile_picture, bio, birthdate, created_at, updated_at) 
-                    VALUES (?, ?, ?, ?, NOW(), NOW())";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$user_id, $profile_picture, $bio, $birthdate]);
-        }
+        $sql = "UPDATE profils SET profile_picture = ?, bio = ?, birthdate = ?, updated_at = NOW() WHERE user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$profile_picture, $bio, $birthdate, $user_id]);
     }
 
     // Si une recherche a été soumise
@@ -80,13 +76,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Récupération des informations du profil
-$sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE 1";
+// Récupération des informations du profil après la mise à jour
+$sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE user_id = ?";
 $stmt = $pdo->prepare($sql);
-$stmt->execute();
+$stmt->execute([$user_id]);
 $profil = $stmt->fetch();
-
-
 
 // Obtenir les amis de l'utilisateur
 $sql = "SELECT users.* FROM friends 
