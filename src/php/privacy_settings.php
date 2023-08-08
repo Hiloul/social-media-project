@@ -4,13 +4,13 @@ require 'dbconfig.php';
 
 // Vérifier si un utilisateur est connecté
 if (!isset($_SESSION['username'])) {
-    // Rediriger vers la page de connexion
-    header('Location: login.php');
-    exit();
+  // Rediriger vers la page de connexion
+  header('Location: login.php');
+  exit();
 }
 
 // Récupérer l'ID de l'utilisateur à partir du nom d'utilisateur
-$sql = "SELECT id FROM users WHERE username = ?";
+$sql = "SELECT id, password FROM users WHERE username = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$_SESSION['username']]);
 $user = $stmt->fetch();
@@ -18,57 +18,93 @@ $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
 
+// Récupérer les amis bloqués de l'utilisateur
+$sql = "
+    SELECT users.username
+    FROM users
+    JOIN friends ON users.id = friends.friend_id
+    WHERE friends.user_id = ? AND friends.status = 'BLOCKED'
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$blocked_friends = $stmt->fetchAll();
+
+// Si le formulaire est soumis
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Vérifier le mot de passe
+  if (password_verify($_POST['password'], $user['password'])) {
+    // Supprimer le compte utilisateur de la base de données
+    $sql = "DELETE FROM users WHERE id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$user_id]);
+
+    // Détruire la session et rediriger l'utilisateur vers la page de connexion
+    session_destroy();
+    header('Location: http://localhost/php/social-media-project/');
+    exit();
+  } else {
+    $error = "Mot de passe incorrect. Veuillez réessayer.";
+  }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Paramètres privés</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        form {
-            background-color: #fff;
-            padding: 20px;
-            width: 300px;
-            margin: 0 auto;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-            border-radius: 5px;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            background-color: #3b5998;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #4a69bd;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
 
-     
+<head>
+  <title>Paramètres privés</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      width: 300px;
+      margin: 0 auto;
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      background-color: #3b5998;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #4a69bd;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
@@ -118,19 +154,34 @@ $user_id = $user['id'];
         font-size: 0.875rem;
       }
     }
- 
-   </style>
+  </style>
 </head>
+
 <body>
-    <h1>privacy_settings</h1>
-    <ul class="list_privacy">
-        <li>Voir ma liste de bloqué(s)</li>
-        <li>Supprimer mon compte</li>
-    </ul>
-    
+  <h1>privacy_settings</h1>
 
+  <ul class="list_privacy">
+    <li>
+      Amis bloqués:
+      <ul>
+        <?php if (empty($blocked_friends)) : ?>
+          <li>Aucun ami bloqué.</li>
+        <?php else : ?>
+          <?php foreach ($blocked_friends as $blocked_friend) : ?>
+            <li><?= htmlspecialchars($blocked_friend['username']) ?></li>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </ul>
+    </li>
+  </ul>
 
-    <a href="profil.php">Retour</a>
+  <!-- Supprimer compte -->
+  <form action="privacy_settings.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.');">
+    <input type="password" name="password" required>
+    <button type="submit">Supprimer mon compte</button>
+</form>
+
+  <a href="profil.php">Retour</a>
 </body>
-</html>
 
+</html>
