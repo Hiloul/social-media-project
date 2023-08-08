@@ -37,6 +37,7 @@ $sql = "SELECT users.* FROM friends
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $friends = $stmt->fetchAll();
+
 // Supprimer un ami
 if (isset($_GET['delete_friend'])) {
     $friend_to_delete_id = filter_var($_GET['delete_friend'], FILTER_SANITIZE_NUMBER_INT);
@@ -62,6 +63,15 @@ if (isset($_GET['delete_friend'])) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $friend_to_delete_id]);
 
+
+        if ($stmt->rowCount()) {
+    echo "Status amicale mit à jour: 'DELETED'.";
+    exit(); // Add this
+} else {
+    echo "Il y a eu un problème lors de la suppression.";
+    exit(); // And this
+}
+
         if ($stmt->rowCount()) {
             echo "Friendship status updated: 'DELETED'.";
             // Commit the transaction
@@ -79,6 +89,9 @@ if (isset($_GET['delete_friend'])) {
 } else {
     echo "No delete_friend_id provided.";
 }
+
+
+
 // Block a friend
 if (isset($_POST['block_friend_id'])) {
     $friend_to_block_id = filter_var($_POST['block_friend_id'], FILTER_SANITIZE_NUMBER_INT);
