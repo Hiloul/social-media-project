@@ -2,29 +2,40 @@
 session_start();
 require 'dbconfig.php';
 
-// Assurez-vous que l'utilisateur est connecté
+// Vérifier si un utilisateur est connecté
 if (!isset($_SESSION['username'])) {
+    // Rediriger vers la page de connexion
     header('Location: login.php');
     exit();
 }
 
-// Récupérer l'ID de l'utilisateur à partir de la session
-$user_id = $_SESSION['user_id'];
+// Récupérer l'ID de l'utilisateur à partir du nom d'utilisateur
+$sql = "SELECT id FROM users WHERE username = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$_SESSION['username']]);
+$user = $stmt->fetch();
 
-// Obtenir les informations du profil
-$sql = "SELECT * FROM profils WHERE user_id = ?";
+// Maintenant $user['id'] contient l'ID de l'utilisateur
+$user_id = $user['id'];
+
+// Récupération des informations du profil
+$sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE user_id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $profil = $stmt->fetch();
+$bio = $birthdate = $profile_picture = '';
 
-// Récupérer les données du formulaire
-$bio = isset($_POST['bio']) && !empty($_POST['bio']) ? $_POST['bio'] : $profil['bio'];
-$birthdate = isset($_POST['birthdate']) && !empty($_POST['birthdate']) ? $_POST['birthdate'] : $profil['birthdate'];
+// Si le profil existe
+if ($profil) {
+    $bio = $profil['bio'];
+    $birthdate = $profil['birthdate'];
+    $profile_picture = $profil['profile_picture'];
+}
+
 // Si le formulaire est soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupérer les données du formulaire
-    $bio = isset($_POST['bio']) && !empty($_POST['bio']) ? $_POST['bio'] : $profil['bio'];
-    $birthdate = isset($_POST['birthdate']) && !empty($_POST['birthdate']) ? $_POST['birthdate'] : $profil['birthdate'];
+    $bio = isset($_POST['bio']) && !empty($_POST['bio']) ? $_POST['bio'] : $bio;
+    $birthdate = isset($_POST['birthdate']) && !empty($_POST['birthdate']) ? $_POST['birthdate'] : $birthdate;
 
     // Si une nouvelle image a été uploadée, la traiter et la mettre à jour
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === 0) {
@@ -53,8 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $profile_picture = $file_destination;
-    } else {
-        $profile_picture = $profil['profile_picture'];
     }
 
     $updated_at = date('Y-m-d H:i:s');
@@ -84,10 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" enctype="multipart/form-data">
         <label for="bio">Bio :</label>
-        <textarea id="bio" name="bio"><?= htmlspecialchars($profil['bio']) ?></textarea>
+        <textarea id="bio" name="bio"><?= htmlspecialchars($bio) ?></textarea>
 
         <label for="birthdate">Date de naissance :</label>
-        <input type="date" id="birthdate" name="birthdate" value="<?= htmlspecialchars($profil['birthdate']) ?>">
+        <input type="date" id="birthdate" name="birthdate" value="<?= htmlspecialchars($birthdate) ?>">
 
         <label for="profile_picture">Photo de profil :</label>
         <input type="file" id="profile_picture" name="profile_picture">

@@ -18,26 +18,65 @@ $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
 
-// Obtenir les informations du profil
-$sql = "SELECT * FROM profils WHERE user_id = ?";
+// Récupération des informations du profil
+$sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE user_id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $profil = $stmt->fetch();
 
-// Si un formulaire de modification du profil a été soumis
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Mettre à jour le profil si un profil existe déjà
-    if ($profil) {
-        $sql = "UPDATE profils SET profile_picture = ?, bio = ?, birthdate = ?, updated_at = NOW() WHERE user_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$profile_picture, $bio, $birthdate, $user_id]);
+// Vérification de la soumission du formulaire
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Récupération des données du formulaire
+    $profile_picture = '';  // Initialisez à une chaîne vide
+    if (isset($_FILES['profile_picture'])) {
+        $file_tmp = $_FILES['profile_picture']['tmp_name'];
+        $file_name = $_FILES['profile_picture']['name'];
+
+        // Vérifiez si le fichier a été correctement téléchargé
+        if (is_uploaded_file($file_tmp)) {
+            // Déplacez le fichier dans le répertoire souhaité
+            $destination = 'uploads/' . $file_name;
+            if (move_uploaded_file($file_tmp, $destination)) {
+                // Si le fichier a été correctement déplacé, enregistrez le chemin du fichier
+                $profile_picture = $destination;
+            }
+        }
     }
-    // Créer un nouveau profil s'il n'existe pas encore
-    else {
-        $sql = "INSERT INTO profils (user_id, profile_picture, bio, birthdate, created_at, updated_at) 
-                VALUES (?, ?, ?, ?, NOW(), NOW())";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$user_id, $profile_picture, $bio, $birthdate]);
+    $bio = $_POST['bio'] ?? '';
+    $birthdate = $_POST['birthdate'] ?? '';
+
+    // Si un formulaire de modification du profil a été soumis
+    if (!empty($profile_picture) || !empty($bio) || !empty($birthdate)) {
+        // Mettre à jour le profil si un profil existe déjà
+        if ($profil) {
+            $sql = "UPDATE profils SET profile_picture = ?, bio = ?, birthdate = ?, updated_at = NOW() WHERE user_id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$profile_picture, $bio, $birthdate, $user_id]);
+        }
+        // Créer un nouveau profil s'il n'existe pas encore
+        else {
+            $sql = "INSERT INTO profils (user_id, profile_picture, bio, birthdate, created_at, updated_at) 
+                    VALUES (?, ?, ?, ?, NOW(), NOW())";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$user_id, $profile_picture, $bio, $birthdate]);
+        }
+    }
+
+    // Si une recherche a été soumise
+    if (isset($_POST['search']) && !empty($_POST['search'])) {
+        $search = $_POST['search'];
+
+        // Requête pour la recherche
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE username LIKE :search");
+        $stmt->execute(['search' => "%$search%"]);
+
+        // Récupération des résultats
+        $results = $stmt->fetchAll();
+
+        // Affichage des résultats
+        foreach ($results as $row) {
+            echo $row['username'] . "<br>";
+        }
     }
 }
 
@@ -46,6 +85,8 @@ $sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $profil = $stmt->fetch();
+
+
 
 // Obtenir les amis de l'utilisateur
 $sql = "SELECT users.* FROM friends 
@@ -310,5 +351,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <p>Aucun commentaire à afficher.</p>
             <?php endif; ?>
 </body>
-
 </html>
