@@ -18,16 +18,10 @@ $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
 
-// Obtenir les informations du profil
+// Récupérer les informations du profil
 $sql = "SELECT * FROM profils WHERE user_id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
-$profil = $stmt->fetch();
-
-// Récupération des informations du profil
-$sql = "SELECT id, user_id, profile_picture, bio, birthdate, created_at, updated_at FROM profils WHERE 1";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
 $profil = $stmt->fetch();
 
 // Récupérer les notifications pour l'utilisateur actuel
@@ -35,6 +29,26 @@ $sql = "SELECT * FROM notifications WHERE user_id = ? AND status = 'unread'";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $newNotifications = $stmt->fetchAll();
+
+// Récupérer les notifications pour l'utilisateur actuel
+$sql = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$notifications = $stmt->fetchAll();
+
+// Gérer la suppression d'une notification
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id'])) {
+  $delete_notification_id = $_POST['delete_notification_id'];
+
+  // Supprimer la notification de la base de données
+  $sql = "DELETE FROM notifications WHERE id = ? AND user_id = ?";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([$delete_notification_id, $user_id]);
+
+  // Rediriger l'utilisateur vers la page précédente
+  header('Location: ' . $_SERVER['HTTP_REFERER']);
+  exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +98,6 @@ $newNotifications = $stmt->fetchAll();
       border-radius: 5px;
     }
 
-    /* CSS responsive */
     @media only screen and (max-width: 600px) {
       .notification {
         width: auto;
@@ -92,27 +105,31 @@ $newNotifications = $stmt->fetchAll();
     }
   </style>
 
-
 </head>
-<div class="notif">
-  <div class="burger-menu" id="burgerMenu">
-    <h2>Notifications</h2>
-    <?php if (!empty($notifications)) : ?>
-      <?php foreach ($notifications as $notification) : ?>
-        <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
-          <p><?= htmlspecialchars($notification['content']) ?></p>
-          <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
-          <!-- Ajout du formulaire et du bouton de suppression de notification -->
-          <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
-            <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
-            <input type="submit" value="Supprimer">
-          </form>
-        </div>
-      <?php endforeach; ?>
-    <?php else : ?>
-      <p>Aucune notification</p>
-    <?php endif; ?>
-    <a href="profil.php">Retour</a>
-  </div>
+
+<body>
+
+  <div class="notif">
+    <div class="burger-menu" id="burgerMenu">
+      <h2>Notifications</h2>
+      <?php if (!empty($notifications)) : ?>
+        <?php foreach ($notifications as $notification) : ?>
+          <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
+            <p><?= htmlspecialchars($notification['content']) ?></p>
+            <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
+            <!-- Ajout du formulaire et du bouton de suppression de notification -->
+            <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
+              <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
+              <input type="submit" value="Supprimer">
+            </form>
+          </div>
+        <?php endforeach; ?>
+      <?php else : ?>
+        <p>Aucune notification</p>
+      <?php endif; ?>
+      <a href="profil.php">Retour</a>
+    </div>
+
+</body>
 
 </html>

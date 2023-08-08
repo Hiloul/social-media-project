@@ -446,14 +446,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
     <div class="container">
         <nav class="menu">
-            <a href="dashboard.php">Aller à l'accueil</a>
-            <a href="message.php">Messagerie privée</a>
+            <!-- Accueil  -->
+            <a href="dashboard.php"><i class="fa-solid fa-house"></i></a>
+            <!-- Messagerie privée -->
+            <a href="message.php"><i class="fa-solid fa-envelope"></i></a>
             <form action="profil.php" method="POST">
-                <label for="search">Rechercher:</label>
+            <!-- Rechercher: -->
+                <label for="search"><i class="fa-solid fa-magnifying-glass"></i></label>
                 <input type="text" id="search" placeholder="Rechercher..." name="search" required>
-                <input type="submit" value="Recherche">
+                <input type="submit" value="Ok">
             </form>
         </nav>
+
+        
 
         <div class="afficher_profil_recherche">
 
