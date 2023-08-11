@@ -46,6 +46,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = "Mot de passe incorrect. Veuillez réessayer.";
   }
 }
+
+// Si un ami est à débloquer
+if (isset($_POST['unblock_id'])) {
+  $friend_id = $_POST['unblock_id'];
+
+  // Mettre à jour le statut de l'ami dans la base de données
+  $sql = "UPDATE friends SET status = 'NOT_FRIENDS' WHERE user_id = ? AND friend_id = ?";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([$user_id, $friend_id]);
+}
 ?>
 
 
@@ -168,7 +178,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <li>Aucun ami bloqué.</li>
         <?php else : ?>
           <?php foreach ($blocked_friends as $blocked_friend) : ?>
-            <li><?= htmlspecialchars($blocked_friend['username']) ?></li>
+            <li>
+              <?= htmlspecialchars($blocked_friend['username']) ?>
+              <form action="" method="post">
+                <input type="hidden" name="unblock_id" value="<?= $blocked_friend['friend_id'] ?>">
+                <input type="submit" value="Débloquer">
+              </form>
+            </li>
           <?php endforeach; ?>
         <?php endif; ?>
       </ul>
@@ -179,9 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form action="privacy_settings.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.');">
     <input type="password" name="password" required>
     <button type="submit">Supprimer mon compte</button>
-</form>
+  </form>
 
   <a href="profil.php">Retour</a>
 </body>
-
 </html>

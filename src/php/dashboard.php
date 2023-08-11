@@ -418,11 +418,13 @@ $newNotifications = $stmt->fetchAll();
             <a href="dashboard.php">Retour</a>
         </div>
 
-        <button id="burgerButtonSettings"><i class="fa-solid fa-gear"></i></button>
         <div class="container">
             <h3>Mon tableau de bord: </h3>
-            <a href="http://localhost/php/social-media-project/index.html"><button><i class="fa-solid fa-house"></i></button></a>
+            <!-- Profil icon -->
             <a href="profil.php"><button><i class="fa-solid fa-user"></i></button></a>
+            <!-- Parametre burger icon -->
+            <button id="burgerButtonSettings"><i class="fa-solid fa-gear"></i></button>
+            <!-- Decconexion icon -->
             <a href="logout.php"><button><i class="fa-solid fa-right-from-bracket"></i></button></a>
 
             <div class="publication">
@@ -440,11 +442,14 @@ $newNotifications = $stmt->fetchAll();
                 <div class="post">
                     <h2><?= $post['content'] ?></h2>
                     <p>Publié par <?= $post['username'] ?> le <?= date("d-m-Y H:i", strtotime($post['created_at'])) ?></p>
-                    <p><?= $post['likes'] ?> likes</p>
-                    <a href="dashboard.php?like=<?= $post['id'] ?>">Like</a>
+                    <p><?= $post['likes'] ?> <i class="fas fa-thumbs-up"></i></p>
+                    <!-- Like icon pouce -->
+                    <a href="dashboard.php?like=<?= $post['id'] ?>"><i class="fas fa-thumbs-up"></i></a>
                     <?php if ($_SESSION['username'] === $post['username']) : ?>
-                        <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')">Supprimer</a>
-                        <a href="edit_post.php?id=<?= $post['id'] ?>">Modifier</a>
+                        <!-- Modifier icon  -->
+                        <a href="edit_post.php?id=<?= $post['id'] ?>"><i class="fas fa-edit"></i></a>
+                        <!-- Supprimer icon poubelle -->
+                        <a href="dashboard.php?delete=<?= $post['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce post ?')"><i class="fa-solid fa-trash"></i></a>
                     <?php endif; ?>
 
                     <!-- Affichage des commentaires -->
@@ -457,8 +462,10 @@ $newNotifications = $stmt->fetchAll();
                                     <p><?= $comment['content'] ?></p>
                                     <p>Commentaire par <?= $comment['username'] ?> le <?= date("d-m-Y H:i", strtotime($comment['created_at'])) ?></p>
                                     <?php if ($_SESSION['username'] === $comment['username']) : ?>
-                                        <a href="dashboard.php?delete_comment=<?= $comment['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')">Supprimer</a>
-                                        <a href="edit_comment.php?id=<?= $comment['id'] ?>">Modifier</a>
+                                        <!-- Icon supprimer -->
+                                        <a href="dashboard.php?delete_comment=<?= $comment['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?')"><i class="fa-solid fa-trash"></i></a>
+                                        <!-- Icon modifier -->
+                                        <a href="edit_comment.php?id=<?= $comment['id'] ?>"><i class="fas fa-edit"></i></a>
                                     <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
@@ -469,7 +476,8 @@ $newNotifications = $stmt->fetchAll();
                     <form id="commentForm" method="post" action="comment.php">
                         <input type="hidden" id="post_id" name="post_id" value="<?= htmlspecialchars($post['id']) ?>">
                         <textarea id="content" name="content" placeholder="Ajouter un commentaire..." required></textarea>
-                        <button type="submit">Publier le commentaire</button>
+                        <!-- Commentaire icon -->
+                        <button type="submit">Publier le commentaire  <i class="fa-solid fa-comment"></i></button>
                     </form>
 
                 <?php endforeach; ?>

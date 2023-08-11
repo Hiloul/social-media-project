@@ -197,19 +197,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: #E9EBEE;
+            /* Gris clair à la Facebook */
+            color: #1C1E21;
+            /* Gris foncé pour le texte */
             margin: 0;
         }
 
         .menu {
             margin-top: 10px;
             height: 60px;
-            background: white;
+            background: #FFFFFF;
             display: flex;
             justify-content: end;
             align-items: center;
             border-radius: 20px;
+            border: 1px solid #D4D6D8;
+            /* Bordure subtile */
         }
 
         .container {
@@ -218,14 +222,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             justify-content: space-between;
         }
 
+        .block-1,
+        .block-2 {
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
         .block-1 {
             height: 400px;
-            border-radius: 20px;
             width: 600px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background: white;
             align-items: center;
             margin-right: 10px;
             margin-bottom: 20px;
@@ -233,13 +242,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
         .block-2 {
             width: 60%;
-            background: white;
-            border-radius: 20px;
         }
 
         h1,
         h2 {
-            color: #444;
+            color: #1C1E21;
             margin-left: 10px;
         }
 
@@ -247,46 +254,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             margin-left: 10px;
         }
 
-        /* .post,
-        .like,
-        .comment,
-        .friend {
-            background-color: white;
-            padding: 20px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
-        } */
-        /* .post p,
-        .like p,
-        .comment p,
-        .friend p {
-            margin: 0 0 10px;
-        } */
         img {
             max-width: 100px;
             border-radius: 50%;
         }
 
         button {
-            background-color: #007BFF;
-            color: white;
+            background-color: #1877F2;
+            /* Bleu Facebook */
+            color: #FFFFFF;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: 0.2s;
+            /* Effet de transition */
+        }
+
+        button:hover {
+            background-color: #165EAB;
+            /* Bleu un peu plus foncé lors du survol */
         }
 
         a {
-            color: #007BFF;
+            color: #1877F2;
+            /* Bleu Facebook */
             margin-right: 15px;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            /* souligné lors du survol */
         }
 
         .content {
             margin-bottom: 30px;
         }
 
-        /* Responsive  */
+        /* Responsive */
         @media screen and (max-width: 1595px) {
             .container {
                 display: flex;
@@ -298,15 +304,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
             .block-1 {
                 height: 400px;
-                border-radius: 20px;
                 width: 90%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                background: white;
-                align-items: center;
-                /* margin-right: 10px; */
-                margin-bottom: 20px;
+                margin-right: 0;
                 padding: 0;
             }
 
@@ -315,80 +314,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             }
         }
 
-        /* @media only screen and (max-width: 600px) {
-
-            .post,
-            .like,
-            .comment,
-            .friend {
-                padding: 10px;
-            }
-
-            img {
-                max-width: 80px;
-            }
-
-            button {
-                padding: 8px 16px;
-            }
-        }
-
-        @media only screen and (max-width: 400px) {
-            img {
-                max-width: 60px;
-            }
-
-            button {
-                padding: 6px 12px;
-            }
-        } */
-
-        .burger-menu {
-            width: 300px;
+        .burger-menu,
+        .burger-menu2 {
             position: fixed;
             top: 0;
-            right: 0;
             height: 100vh;
             padding: 20px;
             background-color: #3b5998;
-            color: #fff;
+            /* Bleu foncé */
+            color: #FFFFFF;
             overflow-y: auto;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
             font-family: Arial, sans-serif;
-            box-shadow: -2px 0px 5px 0px rgba(0, 0, 0, 0.1);
+            box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
         }
 
-        .burger-menu h2 {
-            color: #fff;
-            font-size: 24px;
+        .burger-menu h2,
+        .burger-menu2 h2 {
+            color: #FFFFFF;
             margin-bottom: 20px;
         }
 
-        .burger-menu a {
-            color: #fff;
+        .burger-menu a,
+        .burger-menu2 a {
+            color: #FFFFFF;
             text-decoration: none;
-            font-size: 18px;
-            margin-top: 20px;
-            display: block;
-        }
-
-        .burger-menu .notification {
-            background-color: #4a69bd;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-
-        .burger-menu .notification.unread {
-            background-color: #6a89cc;
-        }
-
-        .burger-menu .notification p {
-            margin: 0;
-            font-size: 16px;
-            line-height: 1.5;
         }
 
         .burger-menu-btn {
@@ -398,78 +348,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             z-index: 1000;
         }
 
-        .burger-menu2 {
-            width: 260px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            padding: 20px;
-            background-color: #3b5998;
-            color: #fff;
-            overflow-y: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-            font-family: Arial, sans-serif;
-            box-shadow: 2px 0px 5px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        .burger-menu2.open {
-            transform: translateX(0);
-        }
-
-        .burger-menu2 h2 {
-            color: #fff;
-            font-size: 22px;
-            margin-bottom: 20px;
-        }
-
-        .burger-menu2 a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 16px;
-            line-height: 2.5;
-            display: block;
-        }
-
-        .burger-menu2 a:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            padding: 2px 10px;
-        }
-
         .scroll-container {
             max-height: 300px;
-            /* définissez la hauteur maximale en fonction de vos besoins */
             overflow-y: auto;
-            /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
             padding: 10px;
             scroll-behavior: smooth;
         }
 
-        /* Personnalisation de la barre de défilement pour les navigateurs basés sur Chromium */
+        /* Custom scrollbar */
         .scroll-container::-webkit-scrollbar {
-            width: 12px;
+            width: 8px;
         }
 
         .scroll-container::-webkit-scrollbar-track {
-            background: #f0f2f5;
+            background: #F0F2F5;
         }
 
         .scroll-container::-webkit-scrollbar-thumb {
-            background-color: #888;
-            border-radius: 20px;
-            border: 3px solid #f0f2f5;
+            background-color: #BEC3C9;
+            border-radius: 10px;
         }
 
         .scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #AAB2BD;
         }
 
-        /* Personnalisation de la barre de défilement pour Firefox */
         .scroll-container {
             scrollbar-width: thin;
-            scrollbar-color: #888 #f0f2f5;
+            scrollbar-color: #BEC3C9 #F0F2F5;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -479,10 +385,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
     <div class="container">
         <nav class="menu">
-            <!-- Accueil  -->
-            <a href="dashboard.php"><i class="fa-solid fa-house"></i></a>
-            <!-- Messagerie privée -->
-            <a href="message.php"><i class="fa-solid fa-envelope"></i></a>
             <form action="profil.php" method="POST">
                 <!-- Rechercher: -->
                 <label for="search"><i class="fa-solid fa-magnifying-glass"></i></label>
@@ -490,8 +392,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <input type="submit" value="Ok">
             </form>
         </nav>
-
-
 
         <div class="afficher_profil_recherche">
 
@@ -525,15 +425,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <a href="notification.php">Paramètres de notification</a>
                 <a href="profil.php">Retour</a>
             </div>
+            <!-- Accueil  -->
+            <a href="dashboard.php"><i class="fa-solid fa-house"></i></a>
+            <!-- Messagerie privée -->
+            <a href="message.php"><i class="fa-solid fa-envelope"></i></a>
             <!-- Boutton cloche et rouage -->
             <button class="burger-menu-btn" id="burgerMenuBtn"><i class="fas fa-bell"></i></button>
             <button id="burgerButtonSettings"><i class="fa-solid fa-gear"></i></button>
-
         </div>
         <div class="block-1">
             <?php if ($profil) : ?>
                 <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
-                <h1><?= htmlspecialchars($_SESSION['username']) ?></h1>
+                <h1>@<?= htmlspecialchars($_SESSION['username']) ?></h1>
                 <form action="edit_profil.php">
                     <button type="submit">Modifier Profil</button>
                 </form>
@@ -550,7 +453,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
         <div class="block-2">
             <!-- Amis -->
-            <h2>Mes amis</h2>
+            <h2><i class="fa-solid fa-address-book"></i> Mes amis</h2>
             <div class="scroll-container">
                 <?php if (!empty($friends)) : ?>
                     <?php foreach ($friends as $friend) : ?>
@@ -574,7 +477,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             </div>
 
             <!-- Posts -->
-            <h2>Mes Posts</h2>
+            <h2><i class="fa-regular fa-keyboard"></i> Mes Posts</h2>
             <div class="scroll-container">
                 <?php if (!empty($posts)) : ?>
                     <?php foreach ($posts as $post) : ?>
@@ -586,8 +489,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <?php else : ?>
                     <p>Aucun post à afficher.</p>
                 <?php endif; ?>
-
-                <h2>Mes Likes</h2>
+                <!-- Like -->
+                <h2><i class="fa-regular fa-thumbs-up"></i> Mes Likes</h2>
                 <?php if (!empty($likes)) : ?>
                     <?php foreach ($likes as $like) : ?>
                         <div class="like content">
@@ -600,7 +503,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             </div>
 
             <!-- Commentaires -->
-            <h2>Mes Commentaires</h2>
+            <h2><i class="fa-regular fa-comment"></i> Mes Commentaires</h2>
             <?php if (!empty($comments)) : ?>
                 <?php foreach ($comments as $comment) : ?>
                     <div class="comment content">
