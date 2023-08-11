@@ -197,71 +197,96 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #E9EBEE;
-            /* Gris clair */
-            color: #1C1E21;
-            /* Gris foncé pour le texte */
+            background-color: #f0f0f0;
+            color: #333;
             margin: 0;
         }
+
         .menu {
             margin-top: 10px;
             height: 60px;
-            background: #FFFFFF;
+            background: white;
             display: flex;
             justify-content: end;
             align-items: center;
             border-radius: 20px;
-            border: 1px solid #D4D6D8;
         }
+
         .container {
             display: flex;
             margin: 30px;
             justify-content: space-between;
         }
-        .block-1, .block-2 {
-            background: #FFFFFF;
-            border-radius: 20px;
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-        }
+
         .block-1 {
             height: 400px;
+            border-radius: 20px;
             width: 600px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            background: white;
             align-items: center;
             margin-right: 10px;
             margin-bottom: 20px;
         }
-        .block-2 {width: 60%;}
-        h1, h2 {
-            color: #1C1E21;
+
+        .block-2 {
+            width: 60%;
+            background: white;
+            border-radius: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #444;
             margin-left: 10px;
         }
-        p {margin-left: 10px;}
+
+        p {
+            margin-left: 10px;
+        }
+
+        /* .post,
+        .like,
+        .comment,
+        .friend {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+        } */
+        /* .post p,
+        .like p,
+        .comment p,
+        .friend p {
+            margin: 0 0 10px;
+        } */
         img {
             max-width: 100px;
             border-radius: 50%;
         }
+
         button {
-            background-color: #1877F2;
-            color: #FFFFFF;
+            background-color: #007BFF;
+            color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: 0.2s;
         }
-        button:hover {background-color: #165EAB;}
-        a {
-            color: #1877F2;
-            margin-right: 15px;
-            text-decoration: none;
-        }
-        a:hover {text-decoration: underline;}
-        .content {margin-bottom: 30px;}
 
-        /* Responsive */
+        a {
+            color: #007BFF;
+            margin-right: 15px;
+        }
+
+        .content {
+            margin-bottom: 30px;
+        }
+
+        /* Responsive  */
         @media screen and (max-width: 1595px) {
             .container {
                 display: flex;
@@ -270,67 +295,182 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 justify-content: center;
                 align-items: center;
             }
+
             .block-1 {
                 height: 400px;
+                border-radius: 20px;
                 width: 90%;
-                margin-right: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                background: white;
+                align-items: center;
+                /* margin-right: 10px; */
+                margin-bottom: 20px;
                 padding: 0;
             }
+
             .block-2 {
                 width: 100%;
             }
         }
-        .burger-menu, .burger-menu2 {
+
+        /* @media only screen and (max-width: 600px) {
+
+            .post,
+            .like,
+            .comment,
+            .friend {
+                padding: 10px;
+            }
+
+            img {
+                max-width: 80px;
+            }
+
+            button {
+                padding: 8px 16px;
+            }
+        }
+
+        @media only screen and (max-width: 400px) {
+            img {
+                max-width: 60px;
+            }
+
+            button {
+                padding: 6px 12px;
+            }
+        } */
+
+        .burger-menu {
+            width: 300px;
             position: fixed;
             top: 0;
+            right: 0;
             height: 100vh;
             padding: 20px;
             background-color: #3b5998;
-            /* Bleu foncé */
-            color: #FFFFFF;
+            color: #fff;
             overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
             font-family: Arial, sans-serif;
-            box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: -2px 0px 5px 0px rgba(0, 0, 0, 0.1);
             z-index: 999;
         }
-        .burger-menu h2, .burger-menu2 h2 {
-            color: #FFFFFF;
+
+        .burger-menu h2 {
+            color: #fff;
+            font-size: 24px;
             margin-bottom: 20px;
         }
-        .burger-menu a, .burger-menu2 a {
-            color: #FFFFFF;
+
+        .burger-menu a {
+            color: #fff;
             text-decoration: none;
+            font-size: 18px;
+            margin-top: 20px;
+            display: block;
         }
+
+        .burger-menu .notification {
+            background-color: #4a69bd;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .burger-menu .notification.unread {
+            background-color: #6a89cc;
+        }
+
+        .burger-menu .notification p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
         .burger-menu-btn {
             position: fixed;
             right: 20px;
             top: 20px;
             z-index: 1000;
         }
+
+        .burger-menu2 {
+            width: 260px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            padding: 20px;
+            background-color: #3b5998;
+            color: #fff;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            font-family: Arial, sans-serif;
+            box-shadow: 2px 0px 5px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .burger-menu2.open {
+            transform: translateX(0);
+        }
+
+        .burger-menu2 h2 {
+            color: #fff;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .burger-menu2 a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            line-height: 2.5;
+            display: block;
+        }
+
+        .burger-menu2 a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 2px 10px;
+        }
+
         .scroll-container {
             max-height: 300px;
+            /* définissez la hauteur maximale en fonction de vos besoins */
             overflow-y: auto;
+            /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
             padding: 10px;
             scroll-behavior: smooth;
         }
 
-        /* Custom scrollbar */
+        /* Personnalisation de la barre de défilement pour les navigateurs basés sur Chromium */
         .scroll-container::-webkit-scrollbar {
-            width: 8px;
+            width: 12px;
         }
+
         .scroll-container::-webkit-scrollbar-track {
-            background: #F0F2F5;
+            background: #f0f2f5;
         }
+
         .scroll-container::-webkit-scrollbar-thumb {
-            background-color: #BEC3C9;
-            border-radius: 10px;
+            background-color: #888;
+            border-radius: 20px;
+            border: 3px solid #f0f2f5;
         }
+
         .scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #AAB2BD;
+            background: #555;
         }
+
+        /* Personnalisation de la barre de défilement pour Firefox */
         .scroll-container {
             scrollbar-width: thin;
-            scrollbar-color: #BEC3C9 #F0F2F5;}
+            scrollbar-color: #888 #f0f2f5;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -346,6 +486,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <input type="submit" value="Ok">
             </form>
         </nav>
+
+
 
         <div class="afficher_profil_recherche">
 
@@ -443,7 +585,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <?php else : ?>
                     <p>Aucun post à afficher.</p>
                 <?php endif; ?>
-                <!-- Like -->
+            <!-- Like -->
                 <h2><i class="fa-regular fa-thumbs-up"></i> Mes Likes</h2>
                 <?php if (!empty($likes)) : ?>
                     <?php foreach ($likes as $like) : ?>
