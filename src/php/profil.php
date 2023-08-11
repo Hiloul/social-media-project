@@ -198,12 +198,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         body {
             font-family: Arial, sans-serif;
             background-color: #E9EBEE;
-            /* Gris clair à la Facebook */
+            /* Gris clair */
             color: #1C1E21;
             /* Gris foncé pour le texte */
             margin: 0;
         }
-
         .menu {
             margin-top: 10px;
             height: 60px;
@@ -213,22 +212,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             align-items: center;
             border-radius: 20px;
             border: 1px solid #D4D6D8;
-            /* Bordure subtile */
         }
-
         .container {
             display: flex;
             margin: 30px;
             justify-content: space-between;
         }
-
-        .block-1,
-        .block-2 {
+        .block-1, .block-2 {
             background: #FFFFFF;
             border-radius: 20px;
             box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
         }
-
         .block-1 {
             height: 400px;
             width: 600px;
@@ -239,58 +233,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             margin-right: 10px;
             margin-bottom: 20px;
         }
-
-        .block-2 {
-            width: 60%;
-        }
-
-        h1,
-        h2 {
+        .block-2 {width: 60%;}
+        h1, h2 {
             color: #1C1E21;
             margin-left: 10px;
         }
-
-        p {
-            margin-left: 10px;
-        }
-
+        p {margin-left: 10px;}
         img {
             max-width: 100px;
             border-radius: 50%;
         }
-
         button {
             background-color: #1877F2;
-            /* Bleu Facebook */
             color: #FFFFFF;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: 0.2s;
-            /* Effet de transition */
         }
-
-        button:hover {
-            background-color: #165EAB;
-            /* Bleu un peu plus foncé lors du survol */
-        }
-
+        button:hover {background-color: #165EAB;}
         a {
             color: #1877F2;
-            /* Bleu Facebook */
             margin-right: 15px;
             text-decoration: none;
         }
-
-        a:hover {
-            text-decoration: underline;
-            /* souligné lors du survol */
-        }
-
-        .content {
-            margin-bottom: 30px;
-        }
+        a:hover {text-decoration: underline;}
+        .content {margin-bottom: 30px;}
 
         /* Responsive */
         @media screen and (max-width: 1595px) {
@@ -301,21 +270,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 justify-content: center;
                 align-items: center;
             }
-
             .block-1 {
                 height: 400px;
                 width: 90%;
                 margin-right: 0;
                 padding: 0;
             }
-
             .block-2 {
                 width: 100%;
             }
         }
-
-        .burger-menu,
-        .burger-menu2 {
+        .burger-menu, .burger-menu2 {
             position: fixed;
             top: 0;
             height: 100vh;
@@ -328,26 +293,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
         }
-
-        .burger-menu h2,
-        .burger-menu2 h2 {
+        .burger-menu h2, .burger-menu2 h2 {
             color: #FFFFFF;
             margin-bottom: 20px;
         }
-
-        .burger-menu a,
-        .burger-menu2 a {
+        .burger-menu a, .burger-menu2 a {
             color: #FFFFFF;
             text-decoration: none;
         }
-
         .burger-menu-btn {
             position: fixed;
             right: 20px;
             top: 20px;
             z-index: 1000;
         }
-
         .scroll-container {
             max-height: 300px;
             overflow-y: auto;
@@ -359,24 +318,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         .scroll-container::-webkit-scrollbar {
             width: 8px;
         }
-
         .scroll-container::-webkit-scrollbar-track {
             background: #F0F2F5;
         }
-
         .scroll-container::-webkit-scrollbar-thumb {
             background-color: #BEC3C9;
             border-radius: 10px;
         }
-
         .scroll-container::-webkit-scrollbar-thumb:hover {
             background: #AAB2BD;
         }
-
         .scroll-container {
             scrollbar-width: thin;
-            scrollbar-color: #BEC3C9 #F0F2F5;
-        }
+            scrollbar-color: #BEC3C9 #F0F2F5;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
