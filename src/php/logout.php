@@ -1,6 +1,19 @@
 <?php
+// Connexion BDD 
+require 'dbconfig.php';
+
 // Démarrer la session
 session_start();
+
+// Si l'utilisateur est connecté, mettez à jour son statut de connexion
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+
+    // Mettre à jour le statut de connexion dans la base de données
+    $sqlUpdate = "UPDATE users SET is_connected = 0 WHERE username = ?";
+    $stmtUpdate = $pdo->prepare($sqlUpdate);
+    $stmtUpdate->execute([$username]);
+}
 
 // Effacer toutes les variables de session
 $_SESSION = array();
@@ -22,3 +35,4 @@ session_destroy();
 // Rediriger l'utilisateur vers la page d'accueil
 header("Location:http://localhost/php/social-media-project/index.html");
 exit;
+?>
