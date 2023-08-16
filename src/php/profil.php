@@ -600,6 +600,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
             <!-- Commentaires -->
             <h2><i class="fa-regular fa-comment"></i> Mes Commentaires</h2>
+            
             <?php if (!empty($comments)) : ?>
                 <?php foreach ($comments as $comment) : ?>
                     <div class="comment content">
@@ -611,6 +612,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <p>Aucun commentaire à afficher.</p>
             <?php endif; ?>
         </div>
+
+<!-- Script JS -->
         <script>
             document.getElementById('burgerMenuBtn').addEventListener('click', function() {
                 var burgerMenu = document.getElementById('burgerMenu');
@@ -629,7 +632,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 burgerMenu2.classList.toggle('open');
             });
         </script>
-
 </body>
-
 </html>
