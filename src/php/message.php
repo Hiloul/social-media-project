@@ -14,6 +14,12 @@ $stmt->execute([$_SESSION['username']]);
 $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
+
+// Mettre à jour le statut des messages de "NOT_RECEIVED" à "RECEIVED" lorsque l'utilisateur est connecté
+$sqlUpdate = "UPDATE messages SET status = 'RECEIVED' WHERE receiver_id = ? AND status = 'NOT_RECEIVED'";
+$stmtUpdate = $pdo->prepare($sqlUpdate);
+$stmtUpdate->execute([$user_id]);
+
 // Si le formulaire est soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $receiver_username = $_POST['receiver_username'];
