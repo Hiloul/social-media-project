@@ -166,11 +166,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Récupérer les notifications pour l'utilisateur actuel
-$sql = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+// Récupération du nombre de messages non lus pour l'utilisateur actuel
+$sql = "SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND status = 'UNREAD'";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
-$notifications = $stmt->fetchAll();
+$count_unread_messages = $stmt->fetchColumn();
+
+// Vérification si une notification pour un message non lu existe déjà
+$sqlCheckNotification = "SELECT COUNT(*) FROM notifications WHERE user_id = ? AND content = 'Nouveau message'";
+$stmtCheckNotification = $pdo->prepare($sqlCheckNotification);
+$stmtCheckNotification->execute([$user_id]);
+$existing_notification = $stmtCheckNotification->fetchColumn();
+
+// Si des messages non lus existent et qu'il n'y a pas déjà une notification à ce sujet, ajoutez une nouvelle notification
+if ($count_unread_messages > 0 && !$existing_notification) {
+    $notification_content = 'Nouveau message';
+    $status = 0;  // 0 pour non lu
+    $created_at = date('Y-m-d H:i:s');
+    $updated_at = $created_at;
+
+    $sqlNotification = "INSERT INTO notifications (user_id, content, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
+    $stmtNotification = $pdo->prepare($sqlNotification);
+    $stmtNotification->execute([$user_id, $notification_content, $status, $created_at, $updated_at]);
+}
+
+
 
 // Gérer la suppression d'une notification
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id'])) {
@@ -492,6 +512,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         <div class="afficher_profil_recherche">
 
         </div>
+
         <div class="notif">
             <div class="burger-menu" id="burgerMenu">
                 <h2>Notifications</h2>
@@ -520,6 +541,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <a href="privacy_settings.php">Paramètres de confidentialité</a>
                 <a href="notification.php">Paramètres de notification</a>
                 <a href="profil.php">Retour</a>
+                <br>
+                <a href="logout.php">Déconnecter</a>
             </div>
             <!-- Accueil  -->
             <a href="dashboard.php"><i class="fa-solid fa-house"></i></a>
@@ -585,7 +608,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <?php else : ?>
                     <p>Aucun post à afficher.</p>
                 <?php endif; ?>
-            <!-- Like -->
+                <!-- Like -->
                 <h2><i class="fa-regular fa-thumbs-up"></i> Mes Likes</h2>
                 <?php if (!empty($likes)) : ?>
                     <?php foreach ($likes as $like) : ?>
@@ -600,7 +623,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
             <!-- Commentaires -->
             <h2><i class="fa-regular fa-comment"></i> Mes Commentaires</h2>
-            
+
             <?php if (!empty($comments)) : ?>
                 <?php foreach ($comments as $comment) : ?>
                     <div class="comment content">
@@ -613,7 +636,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             <?php endif; ?>
         </div>
 
-<!-- Script JS -->
+        <!-- Script JS -->
         <script>
             document.getElementById('burgerMenuBtn').addEventListener('click', function() {
                 var burgerMenu = document.getElementById('burgerMenu');
@@ -633,4 +656,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             });
         </script>
 </body>
+
 </html>

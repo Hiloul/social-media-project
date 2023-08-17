@@ -416,6 +416,8 @@ $newNotifications = $stmt->fetchAll();
             <a href="privacy_settings.php">Paramètres de confidentialité</a>
             <a href="notification.php">Paramètres de notification</a>
             <a href="dashboard.php">Retour</a>
+            <br>
+            <a href="logout.php">Déconnecter</a>
         </div>
 
         <div class="container">

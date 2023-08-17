@@ -121,6 +121,7 @@ if (isset($_GET['delete_message'])) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Messagerie privée</title>
     <style>
@@ -131,7 +132,8 @@ if (isset($_GET['delete_message'])) {
             background-color: #f0f2f5;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             color: #4b4e4f;
         }
 
@@ -149,10 +151,11 @@ if (isset($_GET['delete_message'])) {
             padding: 20px;
             margin: 20px 0;
             border-radius: 8px;
-            box-shadow: 0px 2px 15px rgba(0,0,0,0.1);
+            box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
         }
 
-        form input[type=text], form textarea {
+        form input[type=text],
+        form textarea {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -178,31 +181,46 @@ if (isset($_GET['delete_message'])) {
             padding: 20px;
             margin: 20px 0;
             border-radius: 8px;
-            box-shadow: 0px 2px 15px rgba(0,0,0,0.1);
+            box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* CSS responsive */
         @media only screen and (max-width: 600px) {
-            form input[type=text], form textarea {
+
+            form input[type=text],
+            form textarea {
                 width: 100%;
             }
         }
+
         /* Style du scroll sur plusieru navigateurs */
         .messages-container {
-            max-height: 400px; /* définissez la hauteur maximale en fonction de vos besoins */
-            overflow-y: auto; /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
+            max-height: 400px;
+            /* définissez la hauteur maximale en fonction de vos besoins */
+            overflow-y: auto;
+            /* défilement vertical lorsque le contenu dépasse la hauteur maximale */
             padding: 10px;
         }
 
         /* Personnalisation de la barre de défilement pour les navigateurs basés sur Chromium */
-        .messages-container::-webkit-scrollbar {width: 12px;}
-        .messages-container::-webkit-scrollbar-track {background: #f0f2f5;}
+        .messages-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: #f0f2f5;
+        }
+
         .messages-container::-webkit-scrollbar-thumb {
             background-color: #888;
             border-radius: 20px;
             border: 3px solid #f0f2f5;
         }
-        .messages-container::-webkit-scrollbar-thumb:hover {background: #555;}
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
         /* Personnalisation de la barre de défilement pour Firefox */
         .messages-container {
             scrollbar-width: thin;
@@ -211,8 +229,9 @@ if (isset($_GET['delete_message'])) {
         }
     </style>
 </head>
+
 <body>
-<h1>Messagerie privée</h1>
+    <h1>Messagerie privée</h1>
     <a href="profil.php">Retour au profil</a>
     <h2>Envoyer un message</h2>
     <form method="POST">
@@ -225,56 +244,56 @@ if (isset($_GET['delete_message'])) {
 
     <h2>Messages reçus</h2>
     <div class="messages-container">
-    <?php if (!empty($messages)) : ?>
-        <?php foreach ($messages as $message) : ?>
-            <div class="message">
-                <p>De : <?= htmlspecialchars($message['sender_username']) ?></p>
-                <p>Message : <?= htmlspecialchars($message['content']) ?></p>
-                <p>Reçu le : <?= date("d-m-Y H:i", strtotime($message['created_at'])) ?></p>
-                <a href="#" data-message-id="<?= $message['id'] ?>" onclick="toggleMessage(this); return false;">Lire</a>
+        <?php if (!empty($messages)) : ?>
+            <?php foreach ($messages as $message) : ?>
+                <div class="message">
+                    <p>De : <?= htmlspecialchars($message['sender_username']) ?></p>
+                    <p>Message : <?= htmlspecialchars($message['content']) ?></p>
+                    <p>Reçu le : <?= date("d-m-Y H:i", strtotime($message['created_at'])) ?></p>
+                    <a href="#" data-message-id="<?= $message['id'] ?>" onclick="toggleMessage(this); return false;">Lire</a>
 
-                <a href="message.php?delete_message=<?= $message['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</a>
-            </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Aucun message reçu.</p>
-    <?php endif; ?>
+                    <a href="message.php?delete_message=<?= $message['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</a>
+                </div>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <p>Aucun message reçu.</p>
+        <?php endif; ?>
     </div>
 
     <script>
-function toggleMessage(element) {
-    const messageId = element.getAttribute("data-message-id");
-    
-    // Appel AJAX pour mettre à jour le statut du message à "READ"
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'message.php?message_id=' + messageId, true);
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            // Vous pouvez ajouter du code ici pour faire quelque chose après avoir marqué le message comme lu.
-            // Par exemple, masquer le lien "Lire" ou changer le style du message.
-            element.style.display = "none"; // masquer le lien après avoir cliqué dessus
-        }
-    };
-    xhr.send();
-}
+        function toggleMessage(element) {
+            const messageId = element.getAttribute("data-message-id");
 
-</script>
+            // Appel AJAX pour mettre à jour le statut du message à "READ"
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'message.php?message_id=' + messageId, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Vous pouvez ajouter du code ici pour faire quelque chose après avoir marqué le message comme lu.
+                    // Par exemple, masquer le lien "Lire" ou changer le style du message.
+                    element.style.display = "none"; // masquer le lien après avoir cliqué dessus
+                }
+            };
+            xhr.send();
+        }
+    </script>
 
     <h2>Messages envoyés</h2>
     <div class="messages-container">
-<?php if (!empty($sent_messages)) : ?>
-    <?php foreach ($sent_messages as $message) : ?>
-        <div class="message">
-            <p>A: <?= htmlspecialchars($message['receiver_username']) ?></p>
-            <p>Message: <?= htmlspecialchars($message['content']) ?></p>
-            <p>Date: <?= date('d-m-Y H:i', strtotime($message['created_at'])) ?></p>
-            <a href="message.php?delete_message=<?= $message['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</a>
-        </div>
-    <?php endforeach; ?>
-<?php else : ?>
-    <p>Aucun message envoyé.</p>
-<?php endif; ?>
+        <?php if (!empty($sent_messages)) : ?>
+            <?php foreach ($sent_messages as $message) : ?>
+                <div class="message">
+                    <p>A: <?= htmlspecialchars($message['receiver_username']) ?></p>
+                    <p>Message: <?= htmlspecialchars($message['content']) ?></p>
+                    <p>Date: <?= date('d-m-Y H:i', strtotime($message['created_at'])) ?></p>
+                    <a href="message.php?delete_message=<?= $message['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</a>
+                </div>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <p>Aucun message envoyé.</p>
+        <?php endif; ?>
     </div>
 
 </body>
+
 </html>
