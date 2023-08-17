@@ -109,26 +109,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 
 <body>
 
-  <div class="notif">
+<div class="notif">
     <div class="burger-menu" id="burgerMenu">
-      <h2>Notifications</h2>
-      <?php if (!empty($notifications)) : ?>
-        <?php foreach ($notifications as $notification) : ?>
-          <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
-            <p><?= htmlspecialchars($notification['content']) ?></p>
-            <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
-            <!-- Ajout du formulaire et du bouton de suppression de notification -->
-            <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
-              <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
-              <input type="submit" value="Supprimer">
-            </form>
-          </div>
-        <?php endforeach; ?>
-      <?php else : ?>
-        <p>Aucune notification</p>
-      <?php endif; ?>
-      <a href="profil.php">Retour</a>
+        <h2>Notifications</h2>
+        <?php if (!empty($notifications)) : ?>
+            <?php foreach ($notifications as $notification) : ?>
+                <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
+                    <p><?= htmlspecialchars($notification['content']) ?></p>
+                    <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
+                    
+                    <!-- Ajout d'un bouton pour lire la notification -->
+                    <form action="read_notification.php" method="post">
+                        <input type="hidden" name="read_notification_id" value="<?= $notification['id'] ?>">
+                        <input type="submit" value="Lire">
+                    </form>
+
+                    <!-- Ajout du formulaire et du bouton de suppression de notification -->
+                    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
+                        <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
+                        <input type="submit" value="Supprimer">
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <p>Aucune notification</p>
+        <?php endif; ?>
+        <a href="profil.php">Retour</a>
     </div>
+</div>
+
 
 </body>
 

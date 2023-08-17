@@ -496,22 +496,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
 </head>
 
 <body>
-
+    <!-- Container principale dans le body -->
     <div class="container">
-        <nav class="menu">
+        <div class="menu">
+            <!-- Formulaire de recherche -->
             <form action="profil.php" method="POST">
                 <!-- Rechercher: -->
                 <label for="search"><i class="fa-solid fa-magnifying-glass"></i></label>
                 <input type="text" id="search" placeholder="Rechercher..." name="search" required>
                 <input type="submit" value="Ok">
             </form>
-        </nav>
-
-
-
-        <div class="afficher_profil_recherche">
-
         </div>
+
+        <!-- Div pour afficher le resultat de la recherche -->
+        <div class="afficher_profil_recherche"></div>
 
         <div class="notif">
             <div class="burger-menu" id="burgerMenu">
@@ -533,7 +531,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <?php endif; ?>
                 <a href="profil.php">Retour</a>
             </div>
-
+            <!-- Burger menu des paramètres -->
             <div class="burger-menu2" id="burgerMenu2">
                 <h2>Paramètres</h2>
                 <a href="edit_profil.php">Mise à jour du profil</a>
