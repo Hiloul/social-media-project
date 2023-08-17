@@ -1,36 +1,27 @@
 <?php
 session_start();
 require 'dbconfig.php';
+
 // Vérifier si un utilisateur est connecté
 if (!isset($_SESSION['username'])) {
-    // Rediriger vers la page de connexion
     header('Location: login.php');
     exit();
 }
+
 // Récupérer l'ID de l'utilisateur à partir du nom d'utilisateur
 $sql = "SELECT id FROM users WHERE username = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$_SESSION['username']]);
 $user = $stmt->fetch();
-// Maintenant $user['id'] contient l'ID de l'utilisateur
-$user_id = $user['id'];
+$user_id = $user['id']; // ID de l'utilisateur connecté
 
-// Mettre à jour le statut des messages de "NOT_RECEIVED" à "UNREAD" lorsque l'utilisateur est connecté
+// Mettre à jour le statut des messages de "NOT_RECEIVED" à "UNREAD" pour l'utilisateur connecté
 $sqlUpdate = "UPDATE messages SET status = 'UNREAD' WHERE receiver_id = ? AND status = 'NOT_RECEIVED'";
 $stmtUpdate = $pdo->prepare($sqlUpdate);
 $stmtUpdate->execute([$user_id]);
 
-if (isset($_GET['message_id'])) {
-    $message_id = $_GET['message_id'];
-
-    // Mettre à jour le statut du message à "READ"
-    $sql = "UPDATE messages SET status = 'READ' WHERE id = ? AND receiver_id = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$message_id, $user_id]);
-}
-
 // Si le formulaire est soumis
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['receiver_username']) && isset($_POST['content'])) {
     $receiver_username = $_POST['receiver_username'];
     $content = $_POST['content'];
 
@@ -43,35 +34,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$receiver) {
         die('Destinataire inconnu.');
     }
+
     $receiver_id = $receiver['id'];
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $receiver_username = $_POST['receiver_username'];
-        $content = $_POST['content'];
-        // Insérer le nouveau message dans la base de données
-        $sql = "INSERT INTO messages (sender_id, receiver_id, content, status) VALUES (?, ?, ?, 'NOT_RECEIVED')";
+
+    // Insérer le nouveau message dans la base de données
+    $sql = "INSERT INTO messages (sender_id, receiver_id, content, status) VALUES (?, ?, ?, 'NOT_RECEIVED')";
+    $stmt = $pdo->prepare($sql);
+    $inserted = $stmt->execute([$user_id, $receiver_id, $content]);
+
+    // Si le message est inséré avec succès, créer une notification pour le destinataire
+    if ($inserted) {
+        $notification_content = "Vous avez un nouveau message de " . $_SESSION['username'];
+        $link_to_messaging = "message.php?user_id=" . $user_id;
+        $sql = "INSERT INTO notifications (user_id, content, status, created_at, updated_at, link) 
+                VALUES (?, ?, 'unread', NOW(), NOW(), ?)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$user_id, $receiver_id, $content]);
+        $stmt->execute([$receiver_id, $notification_content, $link_to_messaging]);
     }
 }
+
+// Gestion de la lecture d'un message
+if (isset($_GET['message_id'])) {
+    $message_id = $_GET['message_id'];
+
+    // Mettre à jour le statut du message à "READ"
+    $sql = "UPDATE messages SET status = 'READ' WHERE id = ? AND receiver_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$message_id, $user_id]);
+}
+
+// Gestion de la suppression d'un message
 if (isset($_GET['delete_message'])) {
     $message_id = $_GET['delete_message'];
 
-    // Assurez-vous que le message appartient à l'utilisateur connecté
-    $sql = "SELECT * FROM messages WHERE id = ? AND receiver_id = ?";
+    // Assurez-vous que le message appartient à l'utilisateur connecté (soit comme récepteur, soit comme expéditeur)
+    $sql = "SELECT * FROM messages WHERE id = ? AND (receiver_id = ? OR sender_id = ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$message_id, $user_id]);
+    $stmt->execute([$message_id, $user_id, $user_id]);
     $message = $stmt->fetch();
+
     if ($message) {
         // Si le message appartient à l'utilisateur, le supprimer
         $sql = "DELETE FROM messages WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$message_id]);
-
         echo "Message supprimé avec succès.";
     } else {
         echo "Aucun message à supprimer.";
     }
 }
+
 // Récupérer les messages de l'utilisateur
 $sql = "
     SELECT messages.*, users.username AS sender_username 
@@ -83,7 +95,6 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $messages = $stmt->fetchAll();
-
 
 // Récupérer les messages envoyés par l'utilisateur
 $sql = "
@@ -97,27 +108,8 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $sent_messages = $stmt->fetchAll();
 
-if (isset($_GET['delete_message'])) {
-    $message_id = $_GET['delete_message'];
-
-    // Assurez-vous que le message appartient à l'utilisateur connecté (soit comme récepteur, soit comme expéditeur)
-    $sql = "SELECT * FROM messages WHERE id = ? AND (receiver_id = ? OR sender_id = ?)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$message_id, $user_id, $user_id]);
-    $message = $stmt->fetch();
-    if ($message) {
-        // Si le message appartient à l'utilisateur, le supprimer
-        $sql = "DELETE FROM messages WHERE id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$message_id]);
-
-        echo "Message supprimé avec succès.";
-    } else {
-        echo "Aucun message à supprimer.";
-    }
-}
-
 ?>
+
 
 <!DOCTYPE html>
 <html>

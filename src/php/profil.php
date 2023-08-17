@@ -543,6 +543,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                         <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
                             <p><?= htmlspecialchars($notification['content']) ?></p>
                             <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
+                              <!-- Si la notification a un lien, affichez-le -->
+                    <?php if (isset($notification['link']) && !empty($notification['link'])) : ?>
+                        <a href="<?= htmlspecialchars($notification['link']) ?>" target="_blank">Lire</a>
+                    <?php endif; ?>
                             <!-- Ajout du formulaire et du bouton de suppression de notification -->
                             <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
                                 <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
@@ -553,7 +557,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                 <?php else : ?>
                     <p>Aucune notification</p>
                 <?php endif; ?>
-                <a href="profil.php">Retour</a>
             </div>
             <!-- Burger menu des paramètres -->
             <div class="burger-menu2" id="burgerMenu2">
