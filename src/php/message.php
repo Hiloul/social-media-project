@@ -15,10 +15,19 @@ $user = $stmt->fetch();
 // Maintenant $user['id'] contient l'ID de l'utilisateur
 $user_id = $user['id'];
 
-// Mettre à jour le statut des messages de "NOT_RECEIVED" à "RECEIVED" lorsque l'utilisateur est connecté
-$sqlUpdate = "UPDATE messages SET status = 'RECEIVED' WHERE receiver_id = ? AND status = 'NOT_RECEIVED'";
+// Mettre à jour le statut des messages de "NOT_RECEIVED" à "UNREAD" lorsque l'utilisateur est connecté
+$sqlUpdate = "UPDATE messages SET status = 'UNREAD' WHERE receiver_id = ? AND status = 'NOT_RECEIVED'";
 $stmtUpdate = $pdo->prepare($sqlUpdate);
 $stmtUpdate->execute([$user_id]);
+
+if (isset($_GET['message_id'])) {
+    $message_id = $_GET['message_id'];
+
+    // Mettre à jour le statut du message à "READ"
+    $sql = "UPDATE messages SET status = 'READ' WHERE id = ? AND receiver_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$message_id, $user_id]);
+}
 
 // Si le formulaire est soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -222,6 +231,8 @@ if (isset($_GET['delete_message'])) {
                 <p>De : <?= htmlspecialchars($message['sender_username']) ?></p>
                 <p>Message : <?= htmlspecialchars($message['content']) ?></p>
                 <p>Reçu le : <?= date("d-m-Y H:i", strtotime($message['created_at'])) ?></p>
+                <a href="#" data-message-id="<?= $message['id'] ?>" onclick="toggleMessage(this); return false;">Lire</a>
+
                 <a href="message.php?delete_message=<?= $message['id'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">Supprimer</a>
             </div>
         <?php endforeach; ?>
@@ -229,6 +240,25 @@ if (isset($_GET['delete_message'])) {
         <p>Aucun message reçu.</p>
     <?php endif; ?>
     </div>
+
+    <script>
+function toggleMessage(element) {
+    const messageId = element.getAttribute("data-message-id");
+    
+    // Appel AJAX pour mettre à jour le statut du message à "READ"
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'message.php?message_id=' + messageId, true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Vous pouvez ajouter du code ici pour faire quelque chose après avoir marqué le message comme lu.
+            // Par exemple, masquer le lien "Lire" ou changer le style du message.
+            element.style.display = "none"; // masquer le lien après avoir cliqué dessus
+        }
+    };
+    xhr.send();
+}
+
+</script>
 
     <h2>Messages envoyés</h2>
     <div class="messages-container">
