@@ -36,6 +36,11 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $notifications = $stmt->fetchAll();
 
+
+// Définir le lien vers la messagerie privée
+$link = "message.php?user_id=" . $user_id;
+
+
 // Gérer la suppression d'une notification
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id'])) {
   $delete_notification_id = $_POST['delete_notification_id'];
@@ -118,6 +123,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                     <p><?= htmlspecialchars($notification['content']) ?></p>
                     <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
                     
+                    <!-- Si la notification a un lien, affichez-le -->
+                    <?php if (isset($notification['link']) && !empty($notification['link'])) : ?>
+                        <a href="<?= htmlspecialchars($notification['link']) ?>" target="_blank">Voir le lien</a>
+                    <?php endif; ?>
+                    
                     <!-- Ajout d'un bouton pour lire la notification -->
                     <form action="read_notification.php" method="post">
                         <input type="hidden" name="read_notification_id" value="<?= $notification['id'] ?>">
@@ -137,6 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         <a href="profil.php">Retour</a>
     </div>
 </div>
+
 
 
 </body>

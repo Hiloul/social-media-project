@@ -144,6 +144,26 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $newNotifications = $stmt->fetchAll();
 
+// Récupérer les notifications pour l'utilisateur actuel
+$sql = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$notifications = $stmt->fetchAll();
+
+// Gérer la suppression d'une notification
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id'])) {
+  $delete_notification_id = $_POST['delete_notification_id'];
+
+  // Supprimer la notification de la base de données
+  $sql = "DELETE FROM notifications WHERE id = ? AND user_id = ?";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute([$delete_notification_id, $user_id]);
+
+  // Rediriger l'utilisateur vers la page précédente
+  header('Location: ' . $_SERVER['HTTP_REFERER']);
+  exit();
+}
+
 ?>
 
 <!DOCTYPE html>
