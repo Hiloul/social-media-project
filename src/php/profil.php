@@ -511,6 +511,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         <!-- Div pour afficher le resultat de la recherche -->
         <div class="afficher_profil_recherche"></div>
 
+        <!-- Burger menu des notification -->
         <div class="notif">
             <div class="burger-menu" id="burgerMenu">
                 <h2>Notifications</h2>
@@ -550,6 +551,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             <button class="burger-menu-btn" id="burgerMenuBtn"><i class="fas fa-bell"></i></button>
             <button id="burgerButtonSettings"><i class="fa-solid fa-gear"></i></button>
         </div>
+        <!-- Block 1 ->infos profil -->
         <div class="block-1">
             <?php if ($profil) : ?>
                 <p></strong><img src="<?= htmlspecialchars($profil['profile_picture']) ?>" alt="Profile Picture"></p>
@@ -568,6 +570,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
             <?php endif; ?>
         </div>
 
+        <!-- Block 2 ->contenu profil -->
         <div class="block-2">
             <!-- Amis -->
             <h2><i class="fa-solid fa-address-book"></i> Mes amis</h2>
