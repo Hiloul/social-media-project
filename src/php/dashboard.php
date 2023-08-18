@@ -41,6 +41,7 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
+// Liker
 if (isset($_GET['like'])) {
     $post_id = $_GET['like'];
 
@@ -54,11 +55,28 @@ if (isset($_GET['like'])) {
         $sql = "INSERT INTO likes (user_id, post_id) VALUES (?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $post_id]);
+
+        // Récupérez l'ID du propriétaire du post
+        $sql = "SELECT user_id FROM posts WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$post_id]);
+        $post_owner = $stmt->fetch();
+        $post_owner_id = $post_owner['user_id'];
+
+        // Créez une notification pour le propriétaire du post
+        $notification_content = $_SESSION['username'] . " a aimé votre post.";
+        $link_to_post = "post.php?id=" . $post_id;  // Supposons que "post.php" est la page où le post est affiché
+        $sql = "INSERT INTO notifications (user_id, content, link, status, created_at, updated_at) 
+                VALUES (?, ?, ?, 'unread', NOW(), NOW())";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$post_owner_id, $notification_content, $link_to_post]);
     }
+
     // Rediriger l'utilisateur vers le tableau de bord après avoir liké le post
     header('Location: dashboard.php');
     exit();
 }
+
 
 if (isset($_GET['id'])) {
     $post_id = $_GET['id'];
