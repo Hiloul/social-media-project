@@ -155,50 +155,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Affichage des résultats
         foreach ($results as $row) {
-            echo "<p>" . htmlspecialchars($row['username']) . "</p>";
             if (isset($_POST['search'])) {
                 $searchValue = $_POST['search'];
-
                 // Requête pour rechercher l'utilisateur
                 $sql = "SELECT username, id FROM users WHERE username LIKE ?";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute(["%$searchValue%"]);
-
                 $users = $stmt->fetchAll();
             }
-            // Requête pour vérifier si une demande d'ami a déjà été envoyée
-            $stmt = $pdo->prepare("SELECT * FROM friends WHERE user_id = ? AND friend_id = ?");
-            $stmt->execute([$_SESSION['user_id'], $row['id']]);
-            $friend_request = $stmt->fetch();
-
-            if ($friend_request) {
-                echo "<p>Demande d'amitié envoyée</p>";
-            } else {
-                // Afficher le bouton d'ajout d'ami
-                echo "<form action='send_friend_request.php' method='POST'>";
-                echo "<input type='hidden' name='friend_id' value='" . htmlspecialchars($row['id']) . "'>";
-                echo "<input type='submit' value='Envoyer une demande ami'>";
-                echo "</form>";
-            }
         }
-    } else if (isset($_POST['friend_id'])) {
-        $friend_id = $_POST['friend_id'];
-        $user_id = $_SESSION['user_id'];
-
-        // Ajoute la demande d'ami dans la table 'friends'
-        $sql = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$user_id, $friend_id]);
-
-        // Crée une notification pour l'utilisateur qui reçoit la demande d'ami
-        $content = "Vous avez reçu une demande d'ami de " . $_SESSION['username'];
-        $sql = "INSERT INTO notifications (user_id, content, status, created_at, updated_at) 
-                VALUES (?, ?, 0, NOW(), NOW())";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$friend_id, $content]);
-
-        // Redirige l'utilisateur vers la page précédente
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
     }
 }
 
