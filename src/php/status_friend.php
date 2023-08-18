@@ -155,3 +155,6 @@ if (isset($_POST['friend_id'])) {
 } else {
     echo "No friend_id provided.";
 }
+
+
+

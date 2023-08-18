@@ -34,7 +34,7 @@ $sql = "SELECT status FROM friends WHERE user_id = ? AND friend_id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id, $profile_user_id]);
 $friendData = $stmt->fetch();
-$friendshipStatus = $friendData['status'] ?? "NOT_FRIENDS"; // "NOT_FRIENDS" par défaut si non trouvé
+$friendRequestStatus = $friendData['status'] ?? "NOT_FRIENDS"; // "NOT_FRIENDS" par défaut si non trouvé
 ?>
 
 <!DOCTYPE html>
@@ -115,6 +115,12 @@ $friendshipStatus = $friendData['status'] ?? "NOT_FRIENDS"; // "NOT_FRIENDS" par
                 font-size: 14px;
             }
         }
+
+        button[disabled] {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
     </style>
 
 </head>
@@ -127,15 +133,20 @@ $friendshipStatus = $friendData['status'] ?? "NOT_FRIENDS"; // "NOT_FRIENDS" par
         <p><strong>Anniversaire:</strong> <?php echo htmlspecialchars($profile['birthdate']); ?></p>
         <p><strong>Bio:</strong> <?php echo htmlspecialchars($profile['bio']); ?></p>
     </div>
-    
-    <?php
-    if (in_array($friendshipStatus, ["NOT_FRIENDS", "DELETED"]) && $user_id != $profile_user_id) :
-    ?>
-        <form action="status_friend.php" method="post">
-            <input type="hidden" name="friend_id" value="<?php echo $profile_user_id; ?>">
-            <button type="submit">Ajouter comme ami</button>
-        </form>
-    <?php endif; ?>
+
+    <?php 
+if ($friendRequestStatus === "PENDING" && $user_id != $profile_user_id): 
+?>
+    <button disabled>Demande envoyée</button>
+<?php 
+elseif (in_array($friendRequestStatus, ["NOT_FRIENDS", "DELETED"]) && $user_id != $profile_user_id): 
+?>
+    <form action="status_friend.php" method="post">
+        <input type="hidden" name="friend_id" value="<?php echo $profile_user_id; ?>">
+        <button type="submit">Ajouter comme ami</button>
+    </form>
+<?php endif; ?>
+
 
 </body>
 
