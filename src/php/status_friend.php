@@ -41,19 +41,16 @@ $friends = $stmt->fetchAll();
 // Supprimer un ami
 if (isset($_GET['delete_friend'])) {
     $friend_to_delete_id = filter_var($_GET['delete_friend'], FILTER_SANITIZE_NUMBER_INT);
-
-    // Begin transaction
     $pdo->beginTransaction();
-
     try {
-        // Check that the user is friends with the friend to delete
         $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status != 'DELETED'";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $friend_to_delete_id]);
-
+        
         if ($stmt->rowCount() == 0) {
-            echo "The user you're trying to delete is not your friend.";
+            // L'utilisateur que vous essayez de supprimer n'est pas votre ami.
             $pdo->rollBack();
+            header('Location: profil.php?error=not_friend');
             exit();
         }
 
@@ -63,49 +60,41 @@ if (isset($_GET['delete_friend'])) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $friend_to_delete_id]);
 
-
         if ($stmt->rowCount()) {
-            echo "Status amicale mit à jour: 'DELETED'.";
-            exit(); // Add this
-        } else {
-            echo "Il y a eu un problème lors de la suppression.";
-            exit(); // And this
-        }
-
-        if ($stmt->rowCount()) {
-            echo "Friendship status updated: 'DELETED'.";
-            // Commit the transaction
+            // Statut amical mis à jour: 'DELETED'.
             $pdo->commit();
+            header('Location: profil.php?success=friend_deleted');
+            exit();
         } else {
-            echo "There was a problem deleting the friend.";
-            // Rollback the transaction
             $pdo->rollBack();
+            header('Location: profil.php?error=delete_failed');
+            exit();
         }
     } catch (PDOException $e) {
-        // Rollback the transaction on error
         $pdo->rollBack();
-        echo 'Error: ' . $e->getMessage();
+        header('Location: profil.php?error=db_error');
+        exit();
     }
 } else {
-    echo "No delete_friend_id provided.";
+    header('Location: profil.php?error=no_friend_id');
+    exit();
 }
 
-// Block a friend
+// Bloquer un ami
 if (isset($_POST['friend_id'])) {
     $friend_to_block_id = filter_var($_POST['friend_id'], FILTER_SANITIZE_NUMBER_INT);
-
-    // Start the transaction
     $pdo->beginTransaction();
 
     try {
-        // Verify if the friend to be blocked is indeed a friend and not already blocked
+        // Verifier que l'ami n'est pas déjà bloqué
         $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status != 'BLOCKED'";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $friend_to_block_id]);
 
         if ($stmt->rowCount() == 0) {
-            echo "The user you're trying to block is either not your friend or already blocked.";
+            // L'utilisateur que vous essayez de bloquer est soit déjà bloqué, soit pas votre ami.
             $pdo->rollBack();
+            header('Location: profil.php?error=not_friend_or_blocked');
             exit();
         }
 
@@ -116,22 +105,28 @@ if (isset($_POST['friend_id'])) {
         $stmt->execute([$user_id, $friend_to_block_id]);
 
         if ($stmt->rowCount()) {
-            echo "Friendship status updated: 'BLOCKED'.";
-            // Commit the transaction
+            // Statut amical mis à jour: 'BLOCKED'.
             $pdo->commit();
+            header('Location: profil.php?success=friend_blocked');
+            exit();
         } else {
-            echo "There was a problem blocking the friend.";
-            // Rollback the transaction
             $pdo->rollBack();
+            header('Location: profil.php?error=block_failed');
+            exit();
         }
     } catch (PDOException $e) {
-        // Rollback the transaction on error
         $pdo->rollBack();
-        echo 'Error: ' . $e->getMessage();
+        header('Location: profil.php?error=db_error');
+        exit();
     }
 } else {
-    echo "No block_friend_id provided.";
+    header('Location: profil.php?error=no_friend_id');
+    exit();
 }
+echo "Friend ID: " . $_POST['friend_id'];
+echo "Rows count: " . $stmt->rowCount();
+
+
 
 // Envoie une demande d'ami
 if (isset($_POST['friend_id'])) {
