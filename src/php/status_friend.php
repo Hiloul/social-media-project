@@ -123,10 +123,6 @@ if (isset($_POST['friend_id'])) {
     header('Location: profil.php?error=no_friend_id');
     exit();
 }
-echo "Friend ID: " . $_POST['friend_id'];
-echo "Rows count: " . $stmt->rowCount();
-
-
 
 // Envoie une demande d'ami
 if (isset($_POST['friend_id'])) {
