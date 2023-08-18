@@ -129,16 +129,16 @@ $notifications = $stmt->fetchAll();
 // Gérer la suppression d'une notification
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id'])) {
     $delete_notification_id = $_POST['delete_notification_id'];
-  
+
     // Supprimer la notification de la base de données
     $sql = "DELETE FROM notifications WHERE id = ? AND user_id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$delete_notification_id, $user_id]);
-  
+
     // Rediriger l'utilisateur vers la page précédente
     header('Location: ' . $_SERVER['HTTP_REFERER']);
     exit();
-  }
+}
 
 
 // Vérification de la soumission du formulaire chercher user
@@ -156,7 +156,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Affichage des résultats
         foreach ($results as $row) {
             echo "<p>" . htmlspecialchars($row['username']) . "</p>";
+            if (isset($_POST['search'])) {
+                $searchValue = $_POST['search'];
 
+                // Requête pour rechercher l'utilisateur
+                $sql = "SELECT username, id FROM users WHERE username LIKE ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(["%$searchValue%"]);
+
+                $users = $stmt->fetchAll();
+            }
             // Requête pour vérifier si une demande d'ami a déjà été envoyée
             $stmt = $pdo->prepare("SELECT * FROM friends WHERE user_id = ? AND friend_id = ?");
             $stmt->execute([$_SESSION['user_id'], $row['id']]);
@@ -532,7 +541,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
         </div>
 
         <!-- Div pour afficher le resultat de la recherche -->
-        <div class="afficher_profil_recherche"></div>
+        <div class="afficher_profil_recherche">
+            <?php
+            if (isset($users)) {
+                foreach ($users as $user) {
+                    echo '<a href="profil_page.php?user_id=' . $user['id'] . '">' . $user['username'] . '</a><br>';
+                }
+            }
+            ?>
+        </div>
 
         <!-- Burger menu des notification -->
         <div class="notif">
@@ -543,10 +560,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_notification_id
                         <div class="notification <?= $notification['status'] == 0 ? 'unread' : 'read' ?>">
                             <p><?= htmlspecialchars($notification['content']) ?></p>
                             <p><?= date("d-m-Y H:i", strtotime($notification['created_at'])) ?></p>
-                              <!-- Si la notification a un lien, affichez-le -->
-                    <?php if (isset($notification['link']) && !empty($notification['link'])) : ?>
-                        <a href="<?= htmlspecialchars($notification['link']) ?>" target="_blank">Lire</a>
-                    <?php endif; ?>
+                            <!-- Si la notification a un lien, affichez-le -->
+                            <?php if (isset($notification['link']) && !empty($notification['link'])) : ?>
+                                <a href="<?= htmlspecialchars($notification['link']) ?>" target="_blank">Lire</a>
+                            <?php endif; ?>
                             <!-- Ajout du formulaire et du bouton de suppression de notification -->
                             <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
                                 <input type="hidden" name="delete_notification_id" value="<?= $notification['id'] ?>">
