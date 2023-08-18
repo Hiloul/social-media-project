@@ -46,7 +46,7 @@ if (isset($_GET['delete_friend'])) {
         $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status != 'DELETED'";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $friend_to_delete_id]);
-        
+
         if ($stmt->rowCount() == 0) {
             // L'utilisateur que vous essayez de supprimer n'est pas votre ami.
             $pdo->rollBack();
@@ -80,49 +80,38 @@ if (isset($_GET['delete_friend'])) {
     exit();
 }
 
+
 // Bloquer un ami
-if (isset($_POST['friend_id'])) {
-    $friend_to_block_id = filter_var($_POST['friend_id'], FILTER_SANITIZE_NUMBER_INT);
-    $pdo->beginTransaction();
+if (isset($_GET['block_friend'])) {
+    $friend_to_block_id = filter_var($_GET['block_friend'], FILTER_SANITIZE_NUMBER_INT);
 
     try {
-        // Verifier que l'ami n'est pas déjà bloqué
-        $sql = "SELECT * FROM friends WHERE user_id = ? AND friend_id = ? AND status != 'BLOCKED'";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$user_id, $friend_to_block_id]);
-
-        if ($stmt->rowCount() == 0) {
-            // L'utilisateur que vous essayez de bloquer est soit déjà bloqué, soit pas votre ami.
-            $pdo->rollBack();
-            header('Location: profil.php?error=not_friend_or_blocked');
-            exit();
-        }
-
+        // Mise à jour du statut de l'ami à BLOCKED
         $sql = "UPDATE friends 
-                SET status = 'BLOCKED'
-                WHERE user_id = ? AND friend_id = ?";
+        SET status = 'BLOCKED'
+        WHERE user_id = ? AND friend_id = ? AND status = 'ACCEPTED'";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$user_id, $friend_to_block_id]);
-
-        if ($stmt->rowCount()) {
-            // Statut amical mis à jour: 'BLOCKED'.
-            $pdo->commit();
+        
+        if ($stmt->rowCount() > 0) {
+            // Si le statut d'ami a été mis à jour avec succès
             header('Location: profil.php?success=friend_blocked');
             exit();
         } else {
-            $pdo->rollBack();
             header('Location: profil.php?error=block_failed');
             exit();
         }
     } catch (PDOException $e) {
-        $pdo->rollBack();
         header('Location: profil.php?error=db_error');
         exit();
     }
 } else {
+    
     header('Location: profil.php?error=no_friend_id');
     exit();
 }
+
+
 
 // Envoie une demande d'ami
 if (isset($_POST['friend_id'])) {
