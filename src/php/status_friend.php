@@ -65,12 +65,12 @@ if (isset($_GET['delete_friend'])) {
 
 
         if ($stmt->rowCount()) {
-    echo "Status amicale mit à jour: 'DELETED'.";
-    exit(); // Add this
-} else {
-    echo "Il y a eu un problème lors de la suppression.";
-    exit(); // And this
-}
+            echo "Status amicale mit à jour: 'DELETED'.";
+            exit(); // Add this
+        } else {
+            echo "Il y a eu un problème lors de la suppression.";
+            exit(); // And this
+        }
 
         if ($stmt->rowCount()) {
             echo "Friendship status updated: 'DELETED'.";
